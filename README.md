@@ -24,3 +24,7 @@ Then in a browser, go to `localhost:80` and you will see the SeekTable interface
 all that data will remain local to your machine), and setup the connection like so:
 
 ![Clickhouse setup](img/seektable.png)
+
+And then add all the measures/dimensions you'll want, below in the same screen.
+
+[Here](https://www.seektable.com/help/create-pivot-table) is a basic intro to how to use SeekTable.
