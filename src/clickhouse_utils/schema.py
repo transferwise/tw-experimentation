@@ -2,6 +2,7 @@ from typing import List, Union, Sequence
 
 import pandas as pd
 import numpy as np
+from clickhouse_driver import Client
 
 type_dict = {
     np.dtype("int64"): "Int64",
@@ -55,3 +56,28 @@ def make_clickhouse_schema(
                 ORDER BY {order_str}
             """
     return schema
+
+
+def initialize_schema(
+    client: Client,
+    database_name: str,
+    table_name: str,
+    dtypes: pd.Series,
+    uid_name: str,
+    time_col: str,
+    high_granularity: Sequence = (),
+    flush_table: bool = False,
+):
+    client.execute(f"CREATE DATABASE IF NOT EXISTS {database_name}")
+
+    if flush_table:
+        client.execute(f"DROP TABLE IF EXISTS {database_name}.{table_name}")
+
+    schema = make_clickhouse_schema(
+        dtypes,
+        f"{database_name}.{table_name}",
+        (uid_name, time_col),
+        high_granularity=high_granularity,
+    )
+    print(schema)
+    client.execute(schema)
