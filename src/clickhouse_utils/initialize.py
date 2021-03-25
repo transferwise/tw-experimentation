@@ -48,6 +48,8 @@ if __name__ == "__main__":
     import os
 
     root_dir = os.path.realpath("../../..")
+
+    # this script needs at least one json file to exist, to infer the schema from
     data_loc = os.path.join(
         root_dir, "treasury_accounting/druid/raw_data/ledger_2021-02-01_0.json"
     )

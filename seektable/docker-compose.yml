@@ -1,0 +1,31 @@
+version: '3'
+services:
+  pivotdataservice:
+    image: seektable/pivotdataservice:latest
+    restart: always  
+    expose:
+     - 5000
+    ports:
+     - 5200:5000
+    volumes:
+      - csv-files-volume:/app-data/csv-files
+    env_file:
+      - docker-compose.pivotdataservice.env
+    depends_on:
+      - "seektable"      
+  seektable:
+    image: seektable/seektable:latest
+    restart: always  
+    expose:
+     - 5000
+    ports:
+     - 80:5000
+    volumes:
+      - csv-files-volume:/app-data/csv-files
+      - db-volume:/app-data/db
+    env_file:
+      - docker-compose.seektable.env
+     
+volumes:
+  csv-files-volume:     
+  db-volume:  
