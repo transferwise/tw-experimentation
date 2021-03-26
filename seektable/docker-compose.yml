@@ -1,7 +1,7 @@
 version: '3'
 services:
   pivotdataservice:
-    image: seektable/pivotdataservice:latest
+    image: ${DOCKER_HUB}seektable/pivotdataservice:latest
     restart: always  
     expose:
      - 5000
@@ -14,7 +14,7 @@ services:
     depends_on:
       - "seektable"      
   seektable:
-    image: seektable/seektable:latest
+    image: ${DOCKER_HUB}seektable/seektable:latest
     restart: always  
     expose:
      - 5000
