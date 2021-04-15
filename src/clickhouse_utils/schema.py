@@ -63,9 +63,8 @@ def initialize_schema(
     database_name: str,
     table_name: str,
     dtypes: pd.Series,
-    uid_name: str,
-    time_col: str,
-    high_granularity: Sequence = (),
+    order_by: Sequence[str],
+    high_cardinality: Sequence = (),
     flush_table: bool = False,
 ):
     client.execute(f"CREATE DATABASE IF NOT EXISTS {database_name}")
@@ -76,8 +75,8 @@ def initialize_schema(
     schema = make_clickhouse_schema(
         dtypes,
         f"{database_name}.{table_name}",
-        (uid_name, time_col),
-        high_granularity=high_granularity,
+        order_by=order_by,
+        high_granularity=high_cardinality,
     )
     print(schema)
     client.execute(schema)
