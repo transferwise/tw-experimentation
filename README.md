@@ -15,7 +15,7 @@ To initialize the table schema to ingest into, run `initialize.py` (after editin
 **WARNING: THIS WILL DELETE THE TABLE IF IT ALREADY EXISTED**
 
 To bulk-ingest json files produced by the json dumper in `load_main.py` from the `treasury_accounting` repo (meant for Druid ingestion), run
-` ls ./ledger_2021-02-01* | while read p; do cat $p | clickhouse-client --database=ledger --query="INSERT INTO ledger FORMAT JSONEachRow"; done`
+` ls ./ledger_2021-02-01* | while read p; do cat $p | clickhouse-client --database=ledger --input_format_skip_unknown_fields=1 --query="INSERT INTO ledger FORMAT JSONEachRow"; done`
 from the command line in the directory where those files live (assuming the server runs on the same machine).
 ## Starting SeekTable
 On your local machine, change into the `seektable` directory and run `docker-compose up`. 
