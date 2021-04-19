@@ -49,9 +49,9 @@ if __name__ == "__main__":
 
     root_dir = os.path.realpath("../../..")
 
-    # this script needs at least one json file to exist, to infer the schema from
+    #this script needs at least one json file to exist, to infer the schema from
     data_loc = os.path.join(
-        root_dir, "treasury_accounting/druid/raw_data/ledger_2021-02-01_0.json"
+        root_dir, "treasury_accounting/druid/raw_data/ledger_2021-03-01_0.json"
     )
     data = jsons_files_to_iterable(data_loc)
 
@@ -70,14 +70,15 @@ if __name__ == "__main__":
 
     client = Client(host=host, port=port)
     dtypes = next(iter(data)).dtypes
+    dtypes.drop("TIMESTAMP", inplace=True)  # clickhouse cannot handle millisecond timestamps
 
     initialize_schema(
         client,
         database_name="ledger",
-        table_name="ledger",
+        table_name="ledger_base",
         dtypes=dtypes,
         uid_name="ID",
-        time_col="TIMESTAMP",
+        time_col="EVENT_TIMESTAMP",
         high_granularity=high_cardinality,
         flush_table=True,
     )
