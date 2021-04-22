@@ -10,7 +10,7 @@ type_dict = {
     np.dtype("O"): "String",
     np.dtype("float64"): "Float64",
     np.dtype("float32"): "Float32",
-    np.dtype("<M8[ns]"): "DateTime",
+    np.dtype("<M8[ns]"): "DateTime64(3)",
     np.dtype("bool"): "UInt8",
 }
 
