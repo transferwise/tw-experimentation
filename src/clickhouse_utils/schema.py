@@ -1,8 +1,10 @@
-from typing import List, Union, Sequence
+from typing import Union, Sequence
 
 import pandas as pd
 import numpy as np
 from clickhouse_driver import Client
+from sqlalchemy import create_engine
+from functools import lru_cache
 
 type_dict = {
     np.dtype("int64"): "Int64",
@@ -15,11 +17,19 @@ type_dict = {
 }
 
 
-def normalize_types(x: np.dtype):
-    if x == np.dtype("float64"):
-        return np.float32
+@lru_cache(1024)  # caches results for speed
+def dtypes_from_table(host: str, database: str, table: str = None, query: str = None):
+
+    ch_url = f"clickhouse+native://{host}/{database}"
+    ch_engine = create_engine(ch_url, echo=False)
+
+    if query is None:
+        query = f"select *  from {database}.{table} limit 1"
     else:
-        return x
+        query += " limit 1"
+
+    df = pd.read_sql(query, ch_engine)
+    return df.dtypes
 
 
 def make_clickhouse_schema(
