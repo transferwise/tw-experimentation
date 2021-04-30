@@ -73,9 +73,8 @@ class ClickhouseBatchingSequenceDataset(BatchingSequenceDataset):
     def __len__(self):
         return len(self.uids)
 
-    def __getitem__(self, i: int) -> Tuple[int, int]:
-        this_uid = self.uids[i]
-        return this_uid, self.uid_sizes[this_uid]
+    def __getitem__(self, i: int) -> int:
+        return self.uid_sizes[self.uids[i]]
 
     def get_bulk(self, inds: Sequence[int]) -> Sequence[Dict[str, np.ndarray]]:
         # get sequences for a list of UIDS,
