@@ -1,0 +1,54 @@
+[tool.poetry]
+name = "tw-experimentation"
+version = "0.1.1.13"
+description = "Wise AB platform"
+authors = ["Wise"]
+readme = "README.md"
+# packages = [{ include = "tw-experimentation" }]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+
+[tool.pytest.ini_options]
+addopts = "--strict-markers -vv"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
+testpaths = [
+    "tests",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.9.7 || >3.9.7,<3.10"
+plotly = "^5.17"
+streamlit = "^1.28"
+statsmodels = "^0.13"
+sqlalchemy = "^1.4"
+snowflake-sqlalchemy = "^1.5"
+matplotlib = "^3.8"
+scipy = "1.11.3"
+numpy = "1.23.5"
+pandas = "<1.5.3"
+ipywidgets = "^8.1"
+numpyro = "0.13.2"
+scikit-learn = "^1.1.3"
+wise-pizza = ">=0.2.0"
+jupyter = "^1.0"
+pytest = "^7.4"
+conda-lock = "^2.4.1"
+kaleido = "0.2.1"
+seaborn = "^0.13.0"
+numba = "^0.58.1"
+jax = "^0.4.16"
+jaxlib = "^0.4.14"
+
+
+
+
+[tool.poetry.group.causaltune]
+optional = true
+
+[tool.poetry.group.causaltune.dependencies]
+causaltune = "^0.1.3"
+
+
