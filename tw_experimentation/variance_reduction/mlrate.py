@@ -5,8 +5,7 @@ from tw_experimentation.variance_reduction.utils import (
     split_dataframe,
 )
 from typing import List
-from sklearn.ensemble import HistGradientBoostingRegressor
-from sklearn.linear_model import ElasticNet
+
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 import pandas as pd
@@ -17,7 +16,8 @@ from sklearn.model_selection import StratifiedKFold
 
 
 class MLRATE(VarianceReductionMethod):
-    """Implements Machine Learning Regression-Adjusted Treatment Effect Estimator (MLRATE)."""
+    """Implements Machine Learning Regression-Adjusted Treatment Effect Estimator
+    (MLRATE)."""
 
     def fit(
         self,
@@ -31,7 +31,7 @@ class MLRATE(VarianceReductionMethod):
         model_fit_config: dict = {},
         **kwargs
     ):
-        """_summary_
+        """
 
         Args:
             data (pd.DataFrame): experiment data
@@ -40,8 +40,10 @@ class MLRATE(VarianceReductionMethod):
             target_column (str): name of column containing the target metric
             covariate_columns (List[str]): list of names of covariate columns
             model (_type_, optional): regression model. Defaults to AutoML.
-            model_init_config (dict, optional): configuration parameters passed at the initialization of the model. Defaults to {}.
-            model_fit_config (dict, optional): configuration parameters passed at the fitting of the model. Defaults to {}.
+            model_init_config (dict, optional): configuration parameters
+                passed at the initialization of the model. Defaults to {}.
+            model_fit_config (dict, optional): configuration parameters passed at
+                the fitting of the model. Defaults to {}.
 
         Returns:
             MLRATE: self
@@ -54,7 +56,6 @@ class MLRATE(VarianceReductionMethod):
 
         # split data into `K_splits`-folds for cross-fitting
         splits, index_to_split_map = split_dataframe(df=data, K=K_splits)
-        # splits, index_to_split_map = split_dataframe(df=data.loc[data[treatment_column=0]], K=K_splits)
         N = len(data)
 
         target = data[target_column]
@@ -120,12 +121,6 @@ class MLRATE(VarianceReductionMethod):
                 ml_rate_df[[treatment_column, "g_pred", "g_pred_difference"]]
             ),
         ).fit()
-
-        # self.regression_results = sm.OLS(ml_rate_df['target'],
-        #                                  sm.add_constant(ml_rate_df[[treatment_column, 'g_pred']]))\
-        #                             .fit()
-
-        # fit difference-in-means estimator
         self.fit_baseline(
             data=data, treatment_column=treatment_column, target_column=target_column
         )
@@ -151,7 +146,7 @@ class MLRATE(VarianceReductionMethod):
     # TODO: Fix! This does not seem to be working properly
     @staticmethod
     def robust_variance_estimator(Y: np.array, T: np.array, g_pred: np.array):
-        """Compute the robust variance estimator
+        """Compute the robust variance estimator.
 
         Args:
             Y (np.array): target metric vector
@@ -190,7 +185,7 @@ class MLRATE(VarianceReductionMethod):
         return sigma_hat_sqrd
 
     def calculate_variance_reduction(self):
-        """Calculate variance reduction for method
+        """Calculate variance reduction for method.
 
         Returns:
             float: variance reduction rate
@@ -310,13 +305,10 @@ class AltMLRATE(VarianceReductionMethod):
             ],
         )
         self.variance_reduction_rate = self.calculate_variance_reduction()
-        # self.robust_variance_estimate = self.robust_variance_estimator(Y=target.to_numpy(),
-        #                                                                 T=treatment.to_numpy(),
-        #                                                                 g_pred=g_pred)
         return self
 
     def calculate_variance_reduction(self):
-        """Calculate variance reduction for method
+        """Calculate variance reduction for method.
 
         Returns:
             float: variance reduction rate

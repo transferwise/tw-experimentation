@@ -4,7 +4,6 @@ from tw_experimentation.variance_reduction.variance_reduction_method import (
 )
 import pandas as pd
 from typing import List
-import statsmodels.api as sm
 from sklearn.ensemble import HistGradientBoostingRegressor
 
 # import warnings filter
@@ -31,7 +30,7 @@ class DoublyRobustEstimator(VarianceReductionMethod):
         model_regression_init_config={},
         **kwargs
     ):
-        """Fit the Doubly Robust Estimator to the data.s
+        """Fit the Doubly Robust Estimator to the data.s.
 
         Args:
             data (pd.DataFrame): experiment data
@@ -97,7 +96,8 @@ class DoublyRobustEstimator(VarianceReductionMethod):
     def calculate_ci_width_reduction(
         self, data, covariate_columns, alpha: float = 0.05
     ):
-        """Calculate the width reduction rate in 1-`alpha` * 100% confidence interval."""
+        """Calculate the width reduction rate in 1-`alpha` * 100% confidence
+        interval."""
 
         baseline_conf_int = self.baseline_results.conf_int(alpha=alpha, cols=None)
         baseline_ci_width = baseline_conf_int[1][1] - baseline_conf_int[0][1]

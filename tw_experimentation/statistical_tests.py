@@ -295,8 +295,7 @@ class FrequentistTestResults:
         type_i_error: float = 0.05,
         multitest_correction: Optional[str] = None,
     ):
-        """
-        Compute statistical tests and confidence intervals for each target variable.
+        """Compute statistical tests and confidence intervals for each target variable.
 
         Args:
             direction (str, optional): The direction of the test. Defaults to "two-sided".
@@ -530,8 +529,7 @@ class BonferroniCorrection(MulitpleHypothesisCorrection):
             return p_values
 
     def correct_alphas(self, p_values: Dict[str, float] = None):
-        """
-        Corrects the alpha values for multiple hypothesis testing.
+        """Corrects the alpha values for multiple hypothesis testing.
 
         Args:
             p_values (list, optional): List of p-values for each hypothesis. Defaults to None.
@@ -684,11 +682,8 @@ AVAILABLE_TESTS = {
 
 
 class FrequentistTest(BaseTest):
-    """
-    Frequentist static testing
-    Should include
-    test stat, confidence interval, p values, power,
-    """
+    """Frequentist static testing Should include test stat, confidence interval, p
+    values, power,"""
 
     def __init__(
         self,
@@ -885,9 +880,8 @@ class FrequentistTest(BaseTest):
 
 
 def cuped(ed: ExperimentDataset, has_correction: bool, alpha: float):
-    """
-    Applies the CUPED method to estimate treatment effects in experiment.
-    Serves as a wrapper to variance reduction methods
+    """Applies the CUPED method to estimate treatment effects in experiment. Serves as a
+    wrapper to variance reduction methods.
 
     Args:
         ExperimentDataset (ExperimentDataset): An ExperimentDataset object containing the data to be analyzed.
@@ -978,9 +972,8 @@ def cuped(ed: ExperimentDataset, has_correction: bool, alpha: float):
 
 
 def run_cuped(ed: ExperimentDataset):
-    """
-    Applies the CUPED method to estimate treatment effects in experiment.
-    Serves as a wrapper to variance reduction methods
+    """Applies the CUPED method to estimate treatment effects in experiment. Serves as a
+    wrapper to variance reduction methods.
 
     Args:
         ExperimentDataset (ExperimentDataset): An ExperimentDataset object containing the data to be analyzed.

@@ -37,9 +37,7 @@ NUM_WARMUP = 300
 
 @dataclass
 class BayesResult:
-    """
-    Class to store the results of a Bayesian test
-    """
+    """Class to store the results of a Bayesian test."""
 
     targets: List[str]
     metric_types: List[str]
@@ -90,8 +88,8 @@ class BayesResult:
             return "reject null"
 
     def prob_greater_than_zero(self, target: str):
-        """
-        Compute the probability that the average treatment effect is greater than zero
+        """Compute the probability that the average treatment effect is greater than
+        zero.
 
         Args:
             target (str): target metric
@@ -103,8 +101,7 @@ class BayesResult:
         }
 
     def prob_greater_than_z(self, z: float, target: str):
-        """
-        Compute the probability that the average treatment effect is greater than z
+        """Compute the probability that the average treatment effect is greater than z.
 
         Args:
             z (float): threshold
@@ -117,8 +114,7 @@ class BayesResult:
         }
 
     def prob_smaller_than_z(self, z: float, target: str):
-        """
-        Compute the probability that the average treatment effect is smaller than z
+        """Compute the probability that the average treatment effect is smaller than z.
 
         Args:
             z (float): threshold
@@ -131,9 +127,8 @@ class BayesResult:
         }
 
     def prob_greater_than_z_absolute(self, z: float, target: str):
-        """
-        Compute the probability that the absolute value of
-        the average treatment effect is greater than z
+        """Compute the probability that the absolute value of the average treatment
+        effect is greater than z.
 
         Args:
             z (float): threshold
@@ -147,8 +142,8 @@ class BayesResult:
         }
 
     def prob_within_interval(self, z_lower: float, z_upper: float, target: str):
-        """
-        Compute the probability that the average treatment effect is within the interval [z_lower, z_upper]
+        """Compute the probability that the average treatment effect is within the
+        interval [z_lower, z_upper]
 
         Args:
             z_lower (float): lower bound of interval
@@ -163,8 +158,8 @@ class BayesResult:
         }
 
     def prob_outside_interval(self, z_lower: float, z_upper: float, target: str):
-        """
-        Compute the probability that the average treatment effect is outside the interval [z_lower, z_upper]
+        """Compute the probability that the average treatment effect is outside the
+        interval [z_lower, z_upper]
 
         Args:
             z_lower (float): lower bound of interval
@@ -184,9 +179,8 @@ class BayesResult:
         rope_upper: Optional[float] = None,
         rope_lower: Optional[float] = None,
     ):
-        """
-        Compute the probability that the average treatment effect
-        is in the region of practical equivalence (ROPE)
+        """Compute the probability that the average treatment effect is in the region of
+        practical equivalence (ROPE)
 
         https://easystats.github.io/bayestestR/articles/region_of_practical_equivalence.html
 
@@ -215,7 +209,8 @@ class BayesResult:
     def _rope_interval_autodetect_intervals(
         self, target: str, scale_param: Optional[float] = 0.1
     ):
-        """Compute the ROPE interval based on the standard deviation of the target metric
+        """Compute the ROPE interval based on the standard deviation of the target
+        metric.
 
         Args:
             target (str): target metric
@@ -232,8 +227,7 @@ class BayesResult:
     def _posterior_and_hdi_plot(
         self, sample_per_variant, posterior_hdi_per_variant, distribution_opacity=0.3
     ):
-        """
-        Plot the posterior distribution and the high density interval (HDI)
+        """Plot the posterior distribution and the high density interval (HDI)
 
         Args:
             sample_per_variant (dict): dictionary of posterior samples
@@ -306,8 +300,8 @@ class BayesResult:
         return fig
 
     def fig_posterior_by_target(self, target: str, distribution_opacity: float = 0.3):
-        """
-        Plot the posterior distribution and the high density interval (HDI) of the expected value
+        """Plot the posterior distribution and the high density interval (HDI) of the
+        expected value.
 
         Args:
             target (str): target metric
@@ -331,8 +325,8 @@ class BayesResult:
     def fig_posterior_cdf_by_target(
         self, target: str, distribution_opacity: float = 0.3, facet_rows_variant=False
     ):
-        """
-        Generates a plot of the empirical cumulative distribution (ECDF) function of treatment effect for a given target.
+        """Generates a plot of the empirical cumulative distribution (ECDF) function of
+        treatment effect for a given target.
 
         Args:
             target (str): The target for which to generate the plot.
@@ -360,8 +354,8 @@ class BayesResult:
     def fig_posterior_difference_by_target(
         self, target: str, distribution_opacity: float = 0.3
     ):
-        """
-        Plot the posterior distribution and the high density interval (HDI) of the expected treatment effect
+        """Plot the posterior distribution and the high density interval (HDI) of the
+        expected treatment effect.
 
         Args:
             target (str): target metric
@@ -390,10 +384,9 @@ class BayesResult:
         shade_areas: bool = True,
         shade_limits: Tuple[Union[float, None], Union[float, None]] = (None, None),
     ) -> make_subplots:
-        """
-        Generates a plotly figure showing the cumulative density function of the treatment effect
-        for each variant, based on the posterior distribution of the difference in means between
-        the variant and the control group.
+        """Generates a plotly figure showing the cumulative density function of the
+        treatment effect for each variant, based on the posterior distribution of the
+        difference in means between the variant and the control group.
 
         Args:
             sample_per_variant (dict): A dictionary mapping variant names to lists of samples.
@@ -498,7 +491,7 @@ class BayesTest(BaseTest):
         #    self.set_prior_model(*model_and_params)
 
     def set_prior_model(self, target, variable: str, model, model_params: dict):
-        """Set prior model for a likelihood model parameter
+        """Set prior model for a likelihood model parameter.
 
         Args:
             variable (str): name of variab model variable to be fed into likelihood
@@ -516,8 +509,7 @@ class BayesTest(BaseTest):
         self.update_prior_model_param(target, variable, model_params)
 
     def update_prior_model_param(self, target, variable: str, model_params: dict):
-        """Update parameters for prior.
-        The prior model must have been defined before.
+        """Update parameters for prior. The prior model must have been defined before.
 
         Args:
             variable (str):     name of variab model variable to be fed into likelihood
@@ -533,7 +525,7 @@ class BayesTest(BaseTest):
         self.params_models_per_target[target][variable] = model_params
 
     def set_model_to_default(self):
-        """Reset the bayesian model to default settings"""
+        """Reset the bayesian model to default settings."""
         self.likelihood_model_per_target = {}
         self.variables_per_target = {}
         self.prior_models_per_target = {}
@@ -566,9 +558,7 @@ class BayesTest(BaseTest):
         return bm
 
     def compute_posterior(self, store_prior=True, compute_bayes_factor=True, verbose=0):
-        """Run the Bayesian model via numpyro to obtain the
-        posterior distribution
-        """
+        """Run the Bayesian model via numpyro to obtain the posterior distribution."""
 
         # TODO: save priors on this level
 
@@ -645,10 +635,8 @@ class BayesTest(BaseTest):
             self._store_prior_means(target, mcmc)
 
     def _compute_posterior_predictive(self):
-        """
-        compute posterior predictive distribution from posterior samples
-        only possible after model fit
-        """
+        """Compute posterior predictive distribution from posterior samples only
+        possible after model fit."""
         N_SAMPLES_POST_PRED = 100000
         for target in self.ed.targets:
             self.post_pred[target] = {}

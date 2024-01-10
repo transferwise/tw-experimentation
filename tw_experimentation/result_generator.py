@@ -29,7 +29,7 @@ def generate_results(
     segments: Optional[List[str]] = None,
     remove_outliers=True,
 ):
-    """Compute all results for an experiment
+    """Compute all results for an experiment.
 
     Args:
         df (pd.DataFrame): dataframe with experiment data
@@ -98,7 +98,7 @@ def generate_results(
 
 
 def save_output(path: str, name: str, output: dict):
-    """Save output to pickle file
+    """Save output to pickle file.
 
     Args:
         path (str): path name

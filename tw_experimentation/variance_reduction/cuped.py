@@ -24,7 +24,8 @@ class CUPED(VarianceReductionMethod):
             data (pd.DataFrame): experiment data containing pre-experiment data column
             treatment_column (str): name of column containing treatment flags
             target_column (str): name of column containing target metric
-            covariate_column (str): name of column containing the covariate (pre-experiment data)
+            covariate_column (str): name of column containing the covariate
+                (pre-experiment data)
 
         Returns:
             CUPED: self
@@ -35,8 +36,6 @@ class CUPED(VarianceReductionMethod):
 
         assert set(data[treatment_column].unique()) == {0, 1}
         treatment = data[treatment_column]
-
-        # treatment = pd.get_dummies(data[treatment_column], drop_first=True) # TODO: investigate behaviour when treatment is already binary, also investigate what happens when treatment has more than 2 distinct values
 
         # compute theta by regressing the target on the covariate
         t = (
@@ -182,8 +181,6 @@ class MultivariateCUPED(
 
         assert set(data[treatment_column].unique()) == {0, 1}
         treatment = data[treatment_column]
-
-        # treatment = pd.get_dummies(data[treatment_column], drop_first=True) # TODO: investigate behaviour when treatment is already binary, also investigate what happens when treatment has more than 2 distinct values
 
         # compute theta by regressing the target on the covariate
         covariance = data[[target_column] + covariate_columns].cov()

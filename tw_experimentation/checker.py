@@ -64,8 +64,8 @@ class Monitoring:
 
     @property
     def sample_size_table(self):
-        """
-        Returns a pandas DataFrame containing the sample sizes for each variant and the total sample size.
+        """Returns a pandas DataFrame containing the sample sizes for each variant and
+        the total sample size.
 
         Returns:
             pandas.DataFrame: A DataFrame with the sample sizes for each variant and the total sample size.
@@ -107,9 +107,7 @@ class Monitoring:
         return plot_qq_variants(qq_variants, self.ed, target)
 
     def create_tables_and_plots(self):
-        """
-        Creates the tables and plots for the monitoring.
-        """
+        """Creates the tables and plots for the monitoring."""
         fig_sample_size_pie = plot_sample_size_pie(self.ed)
 
         if self.ed.is_dynamic_observation:
@@ -147,9 +145,8 @@ class Monitoring:
 @dataclass
 class NormalityChecks:
     ed: ExperimentDataset
-    """
-    A class for checking whether metrics regression residuals are normally distributed.
-    Relevant for decision to run t-test or not.
+    """A class for checking whether metrics regression residuals are normally
+    distributed. Relevant for decision to run t-test or not.
 
     Attributes:
     -----------
@@ -167,9 +164,7 @@ class NormalityChecks:
     """
 
     def __post_init__(self):
-        """
-        Calculates standardized residuals for each relevant target and variant.
-        """
+        """Calculates standardized residuals for each relevant target and variant."""
         self.relevant_targets = [
             target
             for target in self.ed.targets
@@ -189,7 +184,7 @@ class NormalityChecks:
             self.standardized_residuals[target][variant] = standardized_residuals
 
     def qqplot(self, target):
-        """Get a quantile-quantile plot for a given target metric"""
+        """Get a quantile-quantile plot for a given target metric."""
         assert target in self.ed.targets and self.ed.metric_types[target] in [
             "continuous",
             "discrete",
@@ -198,11 +193,11 @@ class NormalityChecks:
         return fig
 
     def all_qqplots(self):
-        """Get Q-Q plots for all relevant target metrics"""
+        """Get Q-Q plots for all relevant target metrics."""
         return {target: self.qqplot(target) for target in self.relevant_targets}
 
     def shapiro_wilk_test(self, target, alpha=0.05):
-        """Perform Shapiro-Wilk test for normality on a given target metric"""
+        """Perform Shapiro-Wilk test for normality on a given target metric."""
         results = {"variant": [], "statistic": [], "p-value": []}
         variant_names = variant_name_map(self.ed.n_variants)
         for variant in range(1, self.ed.n_variants):
@@ -223,15 +218,15 @@ class NormalityChecks:
         return results_df
 
     def all_shapiro_wilk_tests(self, alpha=0.05):
-        """Perform Shapiro-Wilk test for normality on all relevant target metrics"""
+        """Perform Shapiro-Wilk test for normality on all relevant target metrics."""
         return {
             target: self.shapiro_wilk_test(target, alpha)
             for target in self.relevant_targets
         }
 
     def create_results(self, alpha=0.05):
-        """
-        Creates an object containing the relevant targets, QQ plots, and Shapiro-Wilk test results.
+        """Creates an object containing the relevant targets, QQ plots, and Shapiro-Wilk
+        test results.
 
         Args:
             alpha (float): The significance level for the Shapiro-Wilk test. Defaults to 0.05.
@@ -290,8 +285,7 @@ class SegmentMonitoring(Monitoring):
         }
 
     def dynamic_sample_size_descriptives(self, segment, most_rlvnt_segments_only=True):
-        """
-        Computes the dynamic sample size descriptives for a given segment.
+        """Computes the dynamic sample size descriptives for a given segment.
 
         Args:
             segment (str): The name of the segment to compute the descriptives for.
@@ -318,8 +312,8 @@ class SegmentMonitoring(Monitoring):
         return df_dyn_avg
 
     def chi_squared_test_table(self, alpha=0.05):
-        """
-        chi-squared test for independence between the variant and each segment in the experiment.
+        """Chi-squared test for independence between the variant and each segment in the
+        experiment.
 
         Args:
             alpha (float): The significance level for the test. Default is 0.05.
@@ -367,9 +361,8 @@ class SegmentMonitoring(Monitoring):
         return chi_squared_table
 
     def chi_squared_heatmaps(self):
-        """
-        Returns a dictionary of plotly figures, one for each segment, illustrating the chi-squared statistic
-        """
+        """Returns a dictionary of plotly figures, one for each segment, illustrating
+        the chi-squared statistic."""
         chi_squared_heatmaps = {}
         for j, s in enumerate(self.segments):
             chi_squared_selection = self._chi_squared_table(s).loc[
@@ -428,8 +421,7 @@ class SequentialTest:
         sds: List[float],
         alpha: float = 0.05,
     ) -> pd.DataFrame:
-        """
-        Runs sequential statistical tests on the data.
+        """Runs sequential statistical tests on the data.
 
         Args:
             metrics (List[str]): A list of metric names to test.
@@ -565,8 +557,8 @@ class SequentialTest:
         sds: dict = None,
         alpha: float = 0.05,
     ):
-        """
-        Computes sequential testing results for a list of metrics, using the effect size means and standard deviations provided, or default values if not specified.
+        """Computes sequential testing results for a list of metrics, using the effect
+        size means and standard deviations provided, or default values if not specified.
 
         Args:
             metrics (List): A list of metric names to compute sequential testing results for.
@@ -627,10 +619,10 @@ class SequentialTest:
         return delta - np.sqrt(shift), delta + np.sqrt(shift)
 
     def fig_sequential_test(self):
-        """
-        Generates a plotly figure with three columns for each target metric, showing the average value over time,
-        the treatment effect compared to the control group, and the p-value of the sequential test for each variant.
-        The figure has one row per target metric, and each row shows the data for all variants.
+        """Generates a plotly figure with three columns for each target metric, showing
+        the average value over time, the treatment effect compared to the control group,
+        and the p-value of the sequential test for each variant. The figure has one row
+        per target metric, and each row shows the data for all variants.
 
         Returns:
             fig (plotly.graph_objs.Figure): the plotly figure object.

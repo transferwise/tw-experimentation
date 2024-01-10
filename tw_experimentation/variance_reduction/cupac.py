@@ -1,6 +1,3 @@
-from tw_experimentation.variance_reduction.variance_reduction_method import (
-    VarianceReductionMethod,
-)
 from tw_experimentation.variance_reduction.cuped import (
     CUPED,
 )

@@ -216,7 +216,7 @@ class RevenueConversion(DGP):
 
 
 class SimpleClickThroughRate(DGP):
-    """To test ratio metrics"""
+    """To test ratio metrics."""
 
     def generate_data(
         self,
@@ -376,16 +376,13 @@ class SimpleHeterogeneousEffect(DGP):
 
 
 class GenerativeFromRealData(DGP):
-    """Generative DGP from real data using residuals
-    Requires fitted autocausality model / predictions as input
-    """
+    """Generative DGP from real data using residuals Requires fitted autocausality model
+    / predictions as input."""
 
     pass
 
 
 class SimpleExperimentOneConfounder(DGP):
-    """
-    Synthetic experiment with one observed confounder ('web' or 'mobile' user)
-    """
+    """Synthetic experiment with one observed confounder ('web' or 'mobile' user)"""
 
     pass

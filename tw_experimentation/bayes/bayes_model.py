@@ -72,7 +72,7 @@ class BayesModel:
         assert self._model_is_well_defined()
 
     def set_prior_model(self, variable: str, model, model_params: dict):
-        """Set prior model for a likelihood model parameter
+        """Set prior model for a likelihood model parameter.
 
         Args:
             variable (str): name of variab model variable to be fed into likelihood
@@ -87,7 +87,7 @@ class BayesModel:
         self.prior_model_params[variable] = model_params
 
     def set_prior_model_param(self, variable: str, model_params: dict):
-        """Set parameters for prior
+        """Set parameters for prior.
 
         Args:
             variable (str):     name of variab model variable to be fed into likelihood

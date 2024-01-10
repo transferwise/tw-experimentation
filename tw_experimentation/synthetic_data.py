@@ -19,24 +19,29 @@ def revenue_conversion_data(
     has_date_column: bool = True,
     seed: int = 1,
 ) -> pd.DataFrame:
-    """
-    Generate synthetic revenue and conversion metrics data for experimentation.
+    """Generate synthetic revenue and conversion metrics data for experimentation.
 
     Args:
         n (int): Number of observations to generate (default: 1000).
-        treatment_share (float): Share of observations assigned to treatment (default: 0.5).
+        treatment_share (float): Share of observations assigned to treatment
+            (default: 0.5).
         baseline_conversion (float): Baseline conversion rate (default: 0.5).
-        treatment_effect_conversion (float): Treatment effect on conversion rate (default: 0.1).
+        treatment_effect_conversion (float): Treatment effect on conversion rate
+            (default: 0.1).
         baseline_mean_revenue (float): Baseline mean revenue (default: 5).
         sigma_revenue (float): Standard deviation of revenue (default: 2).
         treatment_effect_revenue (float): Treatment effect on revenue (default: 0.1).
-        is_dynamic_assignment (bool): Whether to assign treatment dynamically based on trigger dates (default: True).
-        has_date_column (bool): Whether to include a date column in the output dataframe (default: True).
+        is_dynamic_assignment (bool): Whether to assign treatment dynamically based
+            on trigger dates (default: True).
+        has_date_column (bool): Whether to include a date column in
+            the output dataframe (default: True).
         seed (int): Random seed for reproducibility (default: 1).
 
     Returns:
-        pd.DataFrame: Generated synthetic data with columns: 'T', 'conversion', 'revenue', 'pre_exp_revenue', 'num_actions'.
-                      If 'has_date_column' is True, the dataframe will also include a 'trigger_dates' column.
+        pd.DataFrame: Generated synthetic data with columns: 'T', 'conversion',
+            'revenue', 'pre_exp_revenue', 'num_actions'.
+                      If 'has_date_column' is True, the dataframe will also
+                    include a 'trigger_dates' column.
     """
 
     treatment_expectation = baseline_conversion + treatment_effect_conversion
@@ -94,21 +99,22 @@ def revenue_conversion_abn_test(
     treatment_effect_revenue: float = 0.05,
     seed: int = 1,
 ) -> pd.DataFrame:
-    """
-    Generate synthetic data for revenue and conversion metrics in an ABN test.
+    """Generate synthetic data for revenue and conversion metrics in an ABN test.
 
     Args:
         n_treatments (int): Number of treatments (default: 2).
         n (int): Number of samples (default: None).
         baseline_conversion (float): Baseline conversion rate (default: 0.5).
-        treatment_effect_conversion (float): Treatment effect on conversion rate (default: 0.01).
+        treatment_effect_conversion (float): Treatment effect on conversion rate
+            (default: 0.01).
         baseline_mean_revenue (float): Baseline mean revenue (default: 1).
         sigma_revenue (float): Standard deviation of revenue (default: 2).
         treatment_effect_revenue (float): Treatment effect on revenue (default: 0.05).
         seed (int): Random seed (default: 1).
 
     Returns:
-        pd.DataFrame: Synthetic data with columns: 'T', 'conversion', 'revenue', 'pre_exp_revenue', 'num_actions', 'trigger_dates'.
+        pd.DataFrame: Synthetic data with columns: 'T', 'conversion', 'revenue',
+            'pre_exp_revenue', 'num_actions', 'trigger_dates'.
     """
 
     np.random.seed(seed)
@@ -160,8 +166,7 @@ def click_through_data(
     treatment_share: float = 0.5,
     seed: int = 0,
 ) -> pd.DataFrame:
-    """
-    Generate synthetic click-through data for an experiment.
+    """Generate synthetic click-through data for an experiment.
 
     Args:
         n_users (int): Number of users.
@@ -174,7 +179,6 @@ def click_through_data(
 
     Returns:
         pd.DataFrame: DataFrame containing synthetic click-through data.
-
     """
     random.seed(seed)
 

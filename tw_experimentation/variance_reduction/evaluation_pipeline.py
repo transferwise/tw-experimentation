@@ -11,7 +11,6 @@ import numpy as np
 import seaborn as sns
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-from joblib import Parallel, delayed
 import copy
 
 
@@ -62,8 +61,10 @@ class VREvaluation:
 
         Args:
             data (pd.DataFrame, optional): experiment data. Defaults to None.
-            treatment_column (str, optional): name of the column containing treatment assignment. Defaults to None.
-            target_column (str, optional): name of the column containing target metric. Defaults to None.
+            treatment_column (str, optional): name of the column containing
+                treatment assignment. Defaults to None.
+            target_column (str, optional): name of the column containing target metric.
+                Defaults to None.
             true_ate (float, optional): true average treatment effect. Defaults to None.
             method_params_map (dict, optional): map from a method to a . Defaults to {}.
             verbose (bool, optional): _description_. Defaults to False.
@@ -107,7 +108,6 @@ class VREvaluation:
             )
 
             # calculate the statistics of interest
-            # self.estimators.append(estimator) # NOTE: commented to improve memory efficiency
             self.estimates.append(estimator.estimate)
             self.cis.append(estimator.conf_int_95)
             self.p_values.append(estimator.p_value)
@@ -224,22 +224,6 @@ class VREvaluation:
 
         # plot the distribution of the estimates overlaid with the baseline estimate
         elif plot_what == "estimates":  # TODO: convert to a sns distplot
-            # fig, ax = plt.subplots()
-
-            # # Plot histograms with kde=True using seaborn's histplot
-            # sns.histplot(self.estimates, bins=20, color='blue', alpha=0.2, label=f'{self.method.__name__}', kde=True, ax=ax)
-            # sns.histplot(self.baseline_estimates, bins=20, color='red', alpha=0.2, label='DiM', kde=True, ax=ax)
-
-            # ax.set_xlabel('Estimate')
-            # ax.set_ylabel('Density')
-
-            # if self.true_ate is not None:
-            #     ax.axvline(x=self.true_ate, color='black', label='True ATE', linestyle='--')
-
-            # ax.legend()
-            # ax.set_title(f'Estimates for {self.method.__name__}')
-            # plt.show()
-
             fig, ax = plt.subplots()
 
             # plot a kde plot of estimates
@@ -279,9 +263,9 @@ class VREvaluation:
         return fig, ax
 
 
-# ====================================================================================================
-# ====================================================================================================
-# ====================================================================================================
+# =====================================================================================
+# =====================================================================================
+# =====================================================================================
 
 
 class VREvaluationAll:
@@ -319,9 +303,12 @@ class VREvaluationAll:
             target_column (str): name of the column containing the target metric
             method_params_map (dict): map from a method to a dict of parameters
             true_ate (float, optional): true average treatment effect. Defaults to None.
-            verbose (bool, optional): flag specifying whether to print progress. Defaults to False.
-            bootstrap_samples (np.array, optional): an array of bootstrap indices to be used in evaluation. Defaults to None.
-            n_bootstrap (int, optional): number of samples to be bootstrapped. Defaults to 1000.
+            verbose (bool, optional): flag specifying whether to print progress.
+                Defaults to False.
+            bootstrap_samples (np.array, optional): an array of bootstrap indices
+                to be used in evaluation. Defaults to None.
+            n_bootstrap (int, optional): number of samples to be bootstrapped.
+                Defaults to 1000.
 
         Returns:
             Self: self
@@ -413,35 +400,15 @@ class VREvaluationAll:
                 shadow=True,
                 ncol=1,
             )
-            ax.set_title(f"p-values for all methods")
+            ax.set_title("p-values for all methods")
             plt.show()
 
         # plot the distribution of estimates for all methods
         elif plot_what == "estimates":
-            # fig, ax = plt.subplots()
-
-            # for method_name in self.evaluations.keys():
-            #     # if method_name =='DoublyRobustEstimator':
-            #     #     continue
-            #     estimates = self.evaluations[method_name].estimates
-            #     sns.histplot(estimates, bins=20, alpha=0.1, label=f'{method_name}', kde=True, ax=ax)
-
-            # ax.set_xlabel('Estimate')
-            # ax.set_ylabel('Density')
-
-            # if self.true_ate is not None:
-            #     ax.axvline(x=self.true_ate, color='black', label='True ATE', linestyle='--')
-
-            # ax.legend()
-            # ax.set_title('Estimates for all methods')
-            # plt.show()
-
             if ax is None:
                 fig, ax = plt.subplots()
 
             for method_name in self.evaluations.keys():
-                # if method_name == 'MultivariateRegressionAdjusted' or method_name == 'MultivariateRegression':
-                #     continue
                 estimates = self.evaluations[method_name].estimates
                 sns.kdeplot(
                     estimates, fill=False, label=f"{method_name}", ax=ax, linewidth=2
@@ -477,13 +444,14 @@ class VREvaluationAll:
         return ax
 
 
-# ====================================================================================================
-# ====================================================================================================
-# ====================================================================================================
+# ===============================================================================
+# ==============================================================================
+# ===============================================================================
 
 
 class VREvaluationGrid:
-    """Implments a class for running evaluations of all methods while changing their parameters."""
+    """Implments a class for running evaluations of all methods while changing their
+    parameters."""
 
     def __init__(self, methods: List[VarianceReductionMethod]):
         self.methods = methods
@@ -553,7 +521,8 @@ class VREvaluationGrid:
         model_init_configs,
         model_fit_configs,
     ):
-        """Generate a grid of method-parameters map from the base method-parameters map and a list of covariate columns as well as models."""
+        """Generate a grid of method-parameters map from the base method-parameters map
+        and a list of covariate columns as well as models."""
 
         # initialize empty grid
         params_maps_grid = np.ndarray(
@@ -617,8 +586,6 @@ class VREvaluationGrid:
                     show_title=False,
                 )
 
-        # self.evaluation_grid[0, 1].plot(plot_what='estimates', ax=axes[0, 1], show_plot=False)
-        # self.evaluation_grid[1, 1].plot(plot_what='estimates', ax=axes[1, 1], show_plot=False)
         axes[0, -1].legend(
             loc="center left",
             bbox_to_anchor=(1, 0.5),

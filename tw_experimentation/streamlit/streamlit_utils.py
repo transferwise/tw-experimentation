@@ -1,16 +1,9 @@
-import sys, os, pathlib
+# import sys, os, pathlib
 
+# root_path = os.path.realpath("../..")
+# sys.path.insert(0, root_path)
 
-root_path = os.path.realpath("../..")
-sys.path.insert(0, root_path)
-
-sys.path.append(str(pathlib.Path().absolute()).split("/tw_experimentation")[0])
-import streamlit as st
-
-st.write(sys.path)
-import pandas as pd
-from scipy.stats import chi2_contingency
-
+# sys.path.append(str(pathlib.Path().absolute()).split("/tw_experimentation")[0])
 
 ### For PullAndMatchData
 from tw_experimentation.utils import ExperimentDataset
@@ -31,7 +24,18 @@ from tw_experimentation.plotting.monitoring_plots import (
     fig_variant_segment_dependence,
 )
 
+from tw_experimentation.checker import (
+    Monitoring,
+    SegmentMonitoring,
+    SequentialTest,
+    NormalityChecks,
+)
+from tw_experimentation.bayes.bayes_test import BayesTest
 
+import streamlit as st
+
+import pandas as pd
+from scipy.stats import chi2_contingency
 from snowflake.sqlalchemy import URL
 from sqlalchemy import create_engine
 import json
@@ -52,16 +56,7 @@ from tw_experimentation.constants import (
     RESULT_DATABASE,
     RESULT_SCHEMA,
     RESULT_TABLE,
-    ID_COLUMN,
-    TIMESTAMP_COLUMN,
 )
-from tw_experimentation.checker import (
-    Monitoring,
-    SegmentMonitoring,
-    SequentialTest,
-    NormalityChecks,
-)
-from tw_experimentation.bayes.bayes_test import BayesTest
 
 
 def fetch_data_from_table_name(warehouse: str, schema: str, table: str):
@@ -69,7 +64,7 @@ def fetch_data_from_table_name(warehouse: str, schema: str, table: str):
 
 
 def exp_config_to_json():
-    """Converts the current session state to a json file"""
+    """Converts the current session state to a json file."""
     config = {
         "exp_name": st.session_state.exp_name,
         "is_experiment": st.session_state.is_experiment,
@@ -158,7 +153,7 @@ def reset_exp_variables(vars: Optional[List] = None):
 
 
 def cols_to_select(data_loader_cols: List, cols_to_exclude: List[Union[List, None]]):
-    """Helper function to select columns from data loader"""
+    """Helper function to select columns from data loader."""
     cols_to_select = set(data_loader_cols)
     for cols in cols_to_exclude:
         if cols is not None:
@@ -170,9 +165,9 @@ def cols_to_select(data_loader_cols: List, cols_to_exclude: List[Union[List, Non
 
 
 class PullAndMatchData:
-    """Class for
-    - pulling data from snowflake
-    - put data into ExperimentDataset instance
+    """Class for.
+
+    - pulling data from snowflake - put data into ExperimentDataset instance
     """
 
     def __init__(
@@ -272,20 +267,24 @@ class PullAndMatchData:
         outcomes: Optional[List[str]] = None,
         is_dynamic: Optional[bool] = True,
     ):
-        """Create data model / ExperimentDataset with all relevant specification
-        If an ExperimentDataset instance is supplied: Still updates based on other inputs such as
-        targets, variant etc. if those are supplied
+        """Create data model / ExperimentDataset with all relevant specification If an
+        ExperimentDataset instance is supplied: Still updates based on other inputs such
+        as targets, variant etc. if those are supplied.
 
         Args:
             data (Optional[Union[pd.DataFrame, ExperimentDataset]], optional):
-                dataframe or ready ExperimentDataset.
-                If None, relies on data pulled from Snowflake. Defaults to None.
-            variant (Optional[str], optional): Name of variant columnn. Defaults to None.
-            targets (Optional[List[str]], optional): List of primary metrics. Defaults to None.
-            event_timestamp (Optional[str], optional): Timestamp if available. Defaults to None.
-            outcomes (Optional[List[str]], optional): List of outcome metrics.
-                Outcomes that are not targets will be excluded from analysis. Defaults to None.
-            is_dynamic(Optional[bool], optional): Whether experiment is dynamic or static. Defaults to True
+            dataframe or ready ExperimentDataset.         If None, relies on data pulled
+            from Snowflake. Defaults to None.
+            variant (Optional[str], optional): Name of
+            variant columnn. Defaults to None.
+            targets (Optional[List[str]], optional):
+            List of primary metrics. Defaults to None.
+        event_timestamp (Optional[str],
+        optional): Timestamp if available. Defaults to None.
+        outcomes(Optional[List[str]], optional): List of outcome metrics.
+            Outcomes that are not targets will be excluded from analysis. Defaults to None.
+        is_dynamic(Optional[bool], optional): Whether experiment is dynamic or static.
+            Defaults to True
         """
 
         if variant is not None:
@@ -391,7 +390,7 @@ def generate_experiment_output(*args, **kwargs):
 
 
 def ingest_loaded_output(output, temp_only=True):
-    """Ingests output from a loaded json file"""
+    """Ingests output from a loaded json file."""
     assert isinstance(output, dict)
     st.session_state["output_loaded"] = output
     if not temp_only:
@@ -598,14 +597,12 @@ def frequentist_segmentation(ed, segments, alpha=0.05):
 
 
 def _coming_from_other_page(current_page, last_page):
-    """Check whether coming from other streamlit page
+    """Check whether coming from other streamlit page.
 
-    Args:
-        current_page (str): current page name
-        last_page (str): page name on last streamlit run
+    Args:     current_page (str): current page name     last_page (str): page name on
+    last streamlit run
 
-    Returns:
-        bool: arriving from other page or not
+    Returns:     bool: arriving from other page or not
     """
     return not (current_page == last_page)
 

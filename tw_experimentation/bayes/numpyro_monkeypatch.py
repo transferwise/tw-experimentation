@@ -25,8 +25,7 @@ from numpyro.util import not_jax_tracer
 
 
 class ZeroInflatedProbsPatch(Distribution):
-    """
-    ZeroInflatedProbs distribution from Numpyro
+    """ZeroInflatedProbs distribution from Numpyro.
 
     https://num.pyro.ai/en/stable/_modules/numpyro/distributions/discrete.html#ZeroInflatedDistribution
 

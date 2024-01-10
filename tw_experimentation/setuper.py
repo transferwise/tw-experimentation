@@ -21,9 +21,8 @@ from tw_experimentation.utils import ExperimentDataset
 
 @dataclass
 class ExpDesignAutoCalculate:
-    """
-    A class for automatically calculating standard deviation and mean values
-    for pre-experiment columns in an ExperimentDataset.
+    """A class for automatically calculating standard deviation and mean values for pre-
+    experiment columns in an ExperimentDataset.
 
     Attributes:
         ed (ExperimentDataset): The ExperimentDataset object containing
@@ -77,7 +76,8 @@ class ExpDesignAutoCalculate:
 
 
 class Setuper:
-    """Tool for designing AB tests
+    """Tool for designing AB tests.
+
     Result includes:
         - Minimal Detectable Effect Size
         - Sample Size calculation
@@ -121,7 +121,7 @@ class Setuper:
         treatment_share=0.5,
         relation="absolute",
     ):
-        """Design test size from uplift instead of standardized effect size
+        """Design test size from uplift instead of standardized effect size.
 
         Args:
             uplift (float): uplift to detect
@@ -143,7 +143,7 @@ class Setuper:
         )
 
     def sample_size_t_test(self):
-        """t test sample size calculation for continuous outcomes
+        """T test sample size calculation for continuous outcomes.
 
         Returns:
             dict: sample sizes per group
@@ -164,7 +164,7 @@ class Setuper:
         }
 
     def sample_size_two_sample_proportion_z_test(self):
-        """two sample proportion z test sample size calculation
+        """Two sample proportion z test sample size calculation.
 
         Returns:
             dict: sample sizes per group
@@ -185,17 +185,15 @@ class Setuper:
         }
 
     def sample_size_chi_squared_test(self):
-        """
-        Sample Size calculation for chi squared test
-        statsmodels.stats.proportion.proportions_chisquare
-        """
+        """Sample Size calculation for chi squared test
+        statsmodels.stats.proportion.proportions_chisquare."""
         pass
 
     def sample_size_proportion_test(
         self, uplift, baseline_conversion=0.5, relation="absolute"
     ):
-        """Sample sie for proportion test, requires uplift and
-        automatically calculates standard deviation
+        """Sample sie for proportion test, requires uplift and automatically calculates
+        standard deviation.
 
         Args:
             uplift (float): uplift to detect
@@ -223,11 +221,11 @@ class Setuper:
         )
 
     def effect_size_proportion_test(self):
-        """effect size for statsmodels.stats.proportion.test_proportions_2indep"""
+        """Effect size for statsmodels.stats.proportion.test_proportions_2indep."""
         pass
 
     def effect_size_t_test(self, nobs):
-        """effect size for t test given power and number of observations
+        """Effect size for t test given power and number of observations.
 
         Args:
             nobs (int): number of observations
@@ -244,7 +242,7 @@ class Setuper:
         return esresult
 
     def effect_size_two_sample_z_test(self, nobs):
-        """effect size of two sample independent proportion z test
+        """Effect size of two sample independent proportion z test.
 
         Args:
             nobs (int): number of observations
@@ -269,7 +267,7 @@ class Setuper:
         pass
 
     def power_t_test(self, nobs):
-        """power of t test for continuous outcomes
+        """Power of t test for continuous outcomes.
 
         Args:
             nobs (int): number of observations
@@ -289,7 +287,7 @@ class Setuper:
         return pwresult
 
     def power_two_sample_z_test(self, nobs):
-        """power two sample independent proportion z test
+        """Power two sample independent proportion z test.
 
         Args:
             nobs (int): number of observations
@@ -311,7 +309,7 @@ class Setuper:
     def power_proportion_test(
         self, uplift, nobs, baseline_conversion=0.5, relation="absolute"
     ):
-        """power proportion test (as in evan miller)
+        """Power proportion test (as in evan miller)
 
         Args:
             uplift (float): uplift to detect
@@ -344,7 +342,7 @@ class Setuper:
         effect_size_function,
         max_sample_size=1000,
     ):
-        """plot sample size to MDE
+        """Plot sample size to MDE.
 
         Args:
             effect_size_function (function): function that maps sample size to MDE
@@ -365,7 +363,7 @@ class Setuper:
 
 
 def uplift_to_effect_size(uplift, mean, sd, relation="absolute"):
-    """Convert uplift to effect size
+    """Convert uplift to effect size.
 
     Args:
         uplift (float): expected uplift
@@ -386,7 +384,7 @@ def uplift_to_effect_size(uplift, mean, sd, relation="absolute"):
 
 
 def effect_size_to_uplift(es, mean, sd, relation="absolute"):
-    """Convert effect size to uplift
+    """Convert effect size to uplift.
 
     Args:
         es (float): expected effect size
