@@ -1,9 +1,9 @@
 name: Publish package to pypi
 on:
   pull_request:
-    branches: [main, pypi-publish]
-  release:
-    types: [published]
+    branches: [pypi-publish]
+  push:
+    branches: [main]
 jobs:
   publish:
     runs-on: ubuntu-latest
