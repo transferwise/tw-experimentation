@@ -9,6 +9,7 @@ readme = "README.md"
 [build-system]
 requires = ["setuptools", "wheel"]
 
+
 [tool.pytest.ini_options]
 addopts = "--strict-markers -vv"
 markers = [
@@ -17,6 +18,9 @@ markers = [
 testpaths = [
     "tests",
 ]
+# [tool.poetry-version-plugin]
+# source = "git-tag"
+
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.9.7 || >3.9.7,<3.10"
