@@ -22,6 +22,10 @@ jobs:
           python-version: 3.9
       - name: Install dependencies
         run: python -m pip install --upgrade pip twine build poetry
+
+      - name: Poetry single source of truth tag add on
+        run: poetry self add poetry-version-plugin
+        
       - name: Setup virtual environment
         run: poetry install
 
