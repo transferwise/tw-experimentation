@@ -25,7 +25,7 @@ jobs:
 
       - name: Poetry single source of truth tag add on
         run: poetry self add poetry-version-plugin
-        
+
       - name: Setup virtual environment
         run: poetry install
 
@@ -38,4 +38,5 @@ jobs:
       - name: Publish package
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
+          skip-existing: true
           password: ${{ secrets.PYPI_API_TOKEN }}
