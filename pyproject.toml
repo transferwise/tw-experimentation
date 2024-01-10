@@ -1,5 +1,6 @@
 [tool.poetry]
 name = "tw-experimentation"
+dynamic = ["version"]
 version = "0.1.1.13"
 description = "Wise AB platform"
 authors = ["Wise"]
@@ -7,7 +8,7 @@ readme = "README.md"
 # packages = [{ include = "tw-experimentation" }]
 
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools", "wheel", "setuptools_scm>=8"]
 
 [tool.pytest.ini_options]
 addopts = "--strict-markers -vv"
@@ -17,6 +18,9 @@ markers = [
 testpaths = [
     "tests",
 ]
+
+[tool.setuptools_scm]
+version_scheme = "guess-next-dev"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.9.7 || >3.9.7,<3.10"
