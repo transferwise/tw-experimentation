@@ -20,7 +20,7 @@ class CUPAC(CUPED):
         model=HistGradientBoostingRegressor,  # TODO: typing
         model_init_config: dict = {},
         model_fit_config: dict = {},
-        **kwargs
+        **kwargs,
     ) -> Self:
         """Applies CUPAC to data.
 

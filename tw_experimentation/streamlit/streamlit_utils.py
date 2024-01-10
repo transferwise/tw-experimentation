@@ -5,7 +5,6 @@
 
 # sys.path.append(str(pathlib.Path().absolute()).split("/tw_experimentation")[0])
 
-### For PullAndMatchData
 from tw_experimentation.utils import ExperimentDataset
 from tw_experimentation.statistical_tests import (
     FrequentistTest,
@@ -282,7 +281,8 @@ class PullAndMatchData:
         event_timestamp (Optional[str],
         optional): Timestamp if available. Defaults to None.
         outcomes(Optional[List[str]], optional): List of outcome metrics.
-            Outcomes that are not targets will be excluded from analysis. Defaults to None.
+            Outcomes that are not targets will be excluded from analysis.
+            Defaults to None.
         is_dynamic(Optional[bool], optional): Whether experiment is dynamic or static.
             Defaults to True
         """
@@ -318,7 +318,8 @@ class PullAndMatchData:
 
     def _datamodel_is_defined(self):
         if not isinstance(self._ed, ExperimentDataset):
-            'An ExperimentDataset needs to be defined through the method "define_data_model()"'
+            "An ExperimentDataset needs to be defined through the method"
+            '"define_data_model()"'
         return isinstance(self._ed, ExperimentDataset)
 
     @property

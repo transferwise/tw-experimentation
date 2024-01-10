@@ -29,7 +29,7 @@ class MLRATE(VarianceReductionMethod):
         model=AutoML,
         model_init_config: dict = {},
         model_fit_config: dict = {},
-        **kwargs
+        **kwargs,
     ):
         """
 
@@ -231,7 +231,7 @@ class AltMLRATE(VarianceReductionMethod):
         treatment_column: str,
         target_column: str,
         covariate_columns: List[str],
-        **kwargs
+        **kwargs,
     ):
         dfml = data.reset_index(drop=True)  # TODO: check if overwrites data
 

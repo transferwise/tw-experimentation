@@ -28,7 +28,7 @@ class DoublyRobustEstimator(VarianceReductionMethod):
         model_propensity_init_config={},
         model_regression=HistGradientBoostingRegressor,
         model_regression_init_config={},
-        **kwargs
+        **kwargs,
     ):
         """Fit the Doubly Robust Estimator to the data.s.
 

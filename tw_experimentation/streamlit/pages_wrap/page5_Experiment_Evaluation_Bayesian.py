@@ -5,8 +5,6 @@ from tw_experimentation.streamlit.streamlit_utils import (
 )
 import plotly.graph_objects as go
 
-import numpy as np
-
 
 def page_5_experiment_evaluation_bayesian():
     st.session_state.update(st.session_state)
@@ -22,9 +20,10 @@ def page_5_experiment_evaluation_bayesian():
         else:
             emd = st.session_state.ed.experiment_meta_data()
         st.write(
-            "In this section, we fit a Bayesian model on the data.We then use the posterior"
-            " distribution to compute the probability that the variant is better than the"
-            " control."
+            "In this section, we fit a Bayesian model on the data."
+            "We then use the posterior"
+            " distribution to compute the probability that the variant "
+            "is better than the control."
         )
 
         br = bayes_cache_wrapper(
@@ -45,16 +44,24 @@ def page_5_experiment_evaluation_bayesian():
         # TODO: Enable bayes factor when tested properly
         # st.subheader("Bayes Factor")
 
-        description = (
-            "The Bayes Factor is the p-value analogue in Bayesian hypothesis testing. "
-            "It allows us to compare the hypothesis of no effect (null hypothesis) to the"
-            " hypothesis of that there is an effect (alternative hypothesis)."
-            "The decision is made based on the Risk, which is the probability that the"
-            "the null hypothesis is true given the data (probability of a false discovery)."
-        )
+        description = """
+            The Bayes Factor is the p-value analogue in Bayesian hypothesis testing.
+            It allows us to compare the hypothesis of no effect (null hypothesis)
+            to the hypothesis of that there is an effect (alternative hypothesis).
+            The decision is made based on the Risk, which is the probability that
+            the null hypothesis is true given the data
+            (probability of a false discovery)."""
         # TODO: Enable bayes factor when tested properly
         # st.write(description)
-
+        fdrs = [
+            br.false_discovery_rate(st.session_state["bayes_target_plot"], var)
+            for var in range(1, st.session_state.ed.n_variants)
+        ]
+        fdrs = [f"{fdr:.2f}" for fdr in fdrs]
+        bayes_factors = [
+            f'{br.bayes_factor(st.session_state["bayes_target_plot"], var):.2f}'
+            for var in range(1, st.session_state.ed.n_variants)
+        ]
         fig = go.Figure(
             data=[
                 go.Table(
@@ -68,14 +75,8 @@ def page_5_experiment_evaluation_bayesian():
                     ),
                     cells=dict(
                         values=[
-                            [
-                                f'{br.bayes_factor(st.session_state["bayes_target_plot"], var):.2f}'
-                                for var in range(1, st.session_state.ed.n_variants)
-                            ],
-                            [
-                                f'{br.false_discovery_rate(st.session_state["bayes_target_plot"], var)*100:.2f}'
-                                for var in range(1, st.session_state.ed.n_variants)
-                            ],
+                            bayes_factors,
+                            fdrs,
                             [
                                 br.bayes_factor_decision(
                                     st.session_state["bayes_target_plot"], var
@@ -97,7 +98,8 @@ def page_5_experiment_evaluation_bayesian():
         row_order = n_variants <= n_cols_max + 1
 
         description = (
-            "The probability that the average treatment effect is **greater than 0** for"
+            "The probability that the average treatment effect is"
+            "**greater than 0** for"
             f" outcome metric **{st.session_state['bayes_target_plot']}** is\n"
         )
         st.write(description)
@@ -108,22 +110,31 @@ def page_5_experiment_evaluation_bayesian():
         for variant in range(1, n_variants):
             if row_order:
                 with cols[variant - 1]:
+                    prob_greater_zero = (
+                        br.prob_greater_than_zero(
+                            st.session_state["bayes_target_plot"]
+                        )[variant]
+                        * 100
+                    )
                     st.metric(
                         f"{emd.variant_names[variant]}",
-                        value=(
-                            f"{br.prob_greater_than_zero(st.session_state['bayes_target_plot'])[variant]*100:.2f} %"
-                        ),
+                        value=(f"{prob_greater_zero:.2f} %"),
                     )
             else:
+                prob_greater_zero = (
+                    br.prob_greater_than_zero(st.session_state["bayes_target_plot"])[
+                        variant
+                    ]
+                    * 100
+                )
                 st.metric(
                     f"{emd.variant_names[variant]}",
-                    value=(
-                        f"{br.prob_greater_than_zero(st.session_state['bayes_target_plot'])[variant]*100:.2f} %"
-                    ),
+                    value=(f"{prob_greater_zero:.2f} %"),
                 )
 
         description = (
-            "The probability that the average treatment effect is **smaller than 0** for"
+            "The probability that the average treatment effect"
+            "is **smaller than 0** for"
             f" outcome metric **{st.session_state['bayes_target_plot']}** is\n"
         )
         st.write(description)
@@ -134,18 +145,26 @@ def page_5_experiment_evaluation_bayesian():
         for variant in range(1, n_variants):
             if row_order:
                 with cols[variant - 1]:
+                    prob_smaller_zero = (
+                        1
+                        - br.prob_greater_than_zero(
+                            st.session_state["bayes_target_plot"]
+                        )[variant]
+                    ) * 100
                     st.metric(
                         f"{emd.variant_names[variant]}",
-                        value=(
-                            f"{(1-br.prob_greater_than_zero(st.session_state['bayes_target_plot'])[variant])*100:.2f} %"
-                        ),
+                        value=(f"{prob_smaller_zero:.2f} %"),
                     )
             else:
+                prob_smaller_zero = (
+                    1
+                    - br.prob_greater_than_zero(st.session_state["bayes_target_plot"])[
+                        variant
+                    ]
+                ) * 100
                 st.metric(
                     f"{emd.variant_names[variant]}",
-                    value=(
-                        f"{(1-br.prob_greater_than_zero(st.session_state['bayes_target_plot'])[variant])*100:.2f} %"
-                    ),
+                    value=(f"{prob_smaller_zero:.2f} %"),
                 )
 
         st.subheader(
@@ -154,7 +173,8 @@ def page_5_experiment_evaluation_bayesian():
         st.write(
             """
 
-            The probability that the average treatment effect is greater or smaller than a custom `threshold`:
+            The probability that the average treatment effect is greater
+            or smaller than a custom `threshold`:
             """
         )
 
@@ -176,18 +196,28 @@ def page_5_experiment_evaluation_bayesian():
         for variant in range(1, n_variants):
             if row_order:
                 with cols2[variant - 1]:
+                    prob_greater_z = (
+                        br.prob_greater_than_z(
+                            st.session_state["bayes_threshold"],
+                            st.session_state["bayes_target_plot"],
+                        )[variant]
+                        * 100
+                    )
                     st.metric(
                         f"{emd.variant_names[variant]}",
-                        value=(
-                            f"{br.prob_greater_than_z(st.session_state['bayes_threshold'], st.session_state['bayes_target_plot'])[variant]*100:.2f} %"
-                        ),
+                        value=(f"{prob_greater_z:.2f} %"),
                     )
             else:
+                prob_greater_z = (
+                    br.prob_greater_than_z(
+                        st.session_state["bayes_threshold"],
+                        st.session_state["bayes_target_plot"],
+                    )[variant]
+                    * 100
+                )
                 st.metric(
                     f"{emd.variant_names[variant]}",
-                    value=(
-                        f"{br.prob_greater_than_z(st.session_state['bayes_threshold'], st.session_state['bayes_target_plot'])[variant]*100:.2f} %"
-                    ),
+                    value=(f"{prob_greater_z:.2f} %"),
                 )
 
             description = (
@@ -203,37 +233,58 @@ def page_5_experiment_evaluation_bayesian():
         for variant in range(1, n_variants):
             if row_order:
                 with cols2[variant - 1]:
+                    prob_smaller_z = (
+                        br.prob_smaller_than_z(
+                            st.session_state["bayes_threshold"],
+                            st.session_state["bayes_target_plot"],
+                        )[variant]
+                        * 100
+                    )
                     st.metric(
                         f"{emd.variant_names[variant]}",
-                        value=(
-                            f"{br.prob_smaller_than_z(st.session_state['bayes_threshold'], st.session_state['bayes_target_plot'])[variant]*100:.2f} %"
-                        ),
+                        value=(f"{prob_smaller_z:.2f} %"),
                     )
             else:
+                prob_smaller_z = (
+                    br.prob_smaller_than_z(
+                        st.session_state["bayes_threshold"],
+                        st.session_state["bayes_target_plot"],
+                    )[variant]
+                    * 100
+                )
                 st.metric(
                     f"{emd.variant_names[variant]}",
-                    value=(
-                        f"{br.prob_smaller_than_z(st.session_state['bayes_threshold'], st.session_state['bayes_target_plot'])[variant]*100:.2f} %"
-                    ),
+                    value=(f"{prob_smaller_z:.2f} %"),
                 )
 
         st.subheader(
-            "Probability that treatment effect is in ROPE (Region of Practical Equivalence)"
+            "Probability that treatment effect is in ROPE"
+            "(Region of Practical Equivalence)"
         )
 
         st.markdown(
             """
+            As an analogue to frequentist testing,
+            you can define a region of practical equivalence (ROPE).
+            This is an interval where we assume that when the effect is
+            within the interval,
+            the effect is negligible
+            (e.g. not big enough to make an impact,
+            cover cost of rolling out the change).
 
-            As an analogue to frequentist testing, you can define a region of practical equivalence (ROPE). This is an interval where we assume that when the effect is within the interval, the effect is negligible (e.g. not big enough to make an impact, cover cost of rolling out the change). 
-
-            Another reason for defining a ROPE interval is that when we simply look at the probability that the effect is greater than 0, that probability will be 50% even without using any data if we assume that the effect is centered around 0. 
-            
-            The ROPE interval sizes are autodetected based on the variance of the outcome metric.
+            Another reason for defining a ROPE interval is that when we simply
+            look at the
+            probability that the effect is greater than 0, that probability
+            will be 50% even without using any data if we assume that the effect
+            is centered around 0.
+            The ROPE interval sizes are autodetected based on the variance
+            of the outcome metric.
             """
         )
         probs, rope_lower, rope_upper = br.rope(st.session_state["bayes_target_plot"])
         description = (
-            "The probability that the average treatment effect is outside the **region of"
+            "The probability that the average treatment effect is"
+            "outside the **region of"
             f" practical equivalence ({rope_lower:.2f}, {rope_upper:.2f})** for outcome"
             f" metric **{st.session_state['bayes_target_plot']}** is\n"
         )
@@ -270,7 +321,8 @@ def page_5_experiment_evaluation_bayesian():
             )
 
         description = (
-            "The probability that the average treatment effect is **outside the interval"
+            "The probability that the average treatment effect is"
+            "**outside the interval"
             f" ({st.session_state['bayes_threshold_lower']:.2f},"
             f" {st.session_state['bayes_threshold_upper']:.2f})** for outcome metric"
             f" **{st.session_state['bayes_target_plot']}** is\n"
@@ -301,7 +353,8 @@ def page_5_experiment_evaluation_bayesian():
     elif not st.session_state["is_experiment"]:
         st.write(
             "You have only provided pre-experiment data. "
-            'Please define the experiment in "Experiment Design" first to use Experiment Evaluation Bayesian.'
+            'Please define the experiment in "Experiment Design" first to '
+            "use Experiment Evaluation Bayesian."
         )
 
     else:

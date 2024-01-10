@@ -16,7 +16,7 @@ class CUPED(VarianceReductionMethod):
         treatment_column: str,
         target_column: str,
         covariate_column: str,
-        **kwargs
+        **kwargs,
     ):
         """Apply CUPED to data.
 
@@ -172,7 +172,7 @@ class MultivariateCUPED(
         treatment_column: str,
         target_column: str,
         covariate_columns: List[str],
-        **kwargs
+        **kwargs,
     ):
         """Fit the multivariate CUPED model."""
 

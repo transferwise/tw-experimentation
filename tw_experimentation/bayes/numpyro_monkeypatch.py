@@ -41,8 +41,9 @@ class ZeroInflatedProbsPatch(Distribution):
         # assert base_dist.support.is_discrete
         if base_dist.event_shape:
             raise ValueError(
-                "ZeroInflatedProbs expected empty base_dist.event_shape but got {}"
-                .format(base_dist.event_shape)
+                "ZeroInflatedProbs expected empty base_dist.event_shape but got {}".format(
+                    base_dist.event_shape
+                )
             )
         # XXX: we might need to promote parameters of base_dist but let's keep
         # this simplified for now

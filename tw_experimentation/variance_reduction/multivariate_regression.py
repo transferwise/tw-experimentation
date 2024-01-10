@@ -13,7 +13,7 @@ class MultivariateRegression(VarianceReductionMethod):
         treatment_column: str,
         target_column: str,
         covariate_columns: List[str],
-        **kwargs
+        **kwargs,
     ):
         """Apply Multivariate Regression to data.
 
@@ -107,7 +107,7 @@ class MultivariateRegressionAdjusted(VarianceReductionMethod):
         treatment_column: str,
         target_column: str,
         covariate_columns: List[str],
-        **kwargs
+        **kwargs,
     ):
         """Apply Multivariate Regression to data.
 
