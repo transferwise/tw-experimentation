@@ -216,7 +216,7 @@ class RevenueConversion(DGP):
 
 
 class SimpleClickThroughRate(DGP):
-    """To test ratio metrics"""
+    """To test ratio metrics."""
 
     def generate_data(
         self,
@@ -282,7 +282,7 @@ class MixtureModel(DGP):
             *ctrl_dist_args,
             distribution=ctrl_distribution,
             n_models=n_models,
-            **ctrl_dist_kwargs
+            **ctrl_dist_kwargs,
         )
         # mu = .6
         # beta = 1
@@ -292,7 +292,7 @@ class MixtureModel(DGP):
             *treat_dist_args,
             distribution=treat_distribution,
             n_models=n_models,
-            **treat_dist_kwargs
+            **treat_dist_kwargs,
         )
 
         samples = {}
@@ -301,7 +301,7 @@ class MixtureModel(DGP):
             samples[str(v)] = sampler(
                 **final_dist_params_ctrl,
                 **{mix_param: v},
-                size=(n_per_model, v.shape[0])
+                size=(n_per_model, v.shape[0]),
             )
 
         df_control = pd.DataFrame(
@@ -376,16 +376,13 @@ class SimpleHeterogeneousEffect(DGP):
 
 
 class GenerativeFromRealData(DGP):
-    """Generative DGP from real data using residuals
-    Requires fitted autocausality model / predictions as input
-    """
+    """Generative DGP from real data using residuals Requires fitted autocausality model
+    / predictions as input."""
 
     pass
 
 
 class SimpleExperimentOneConfounder(DGP):
-    """
-    Synthetic experiment with one observed confounder ('web' or 'mobile' user)
-    """
+    """Synthetic experiment with one observed confounder ('web' or 'mobile' user)"""
 
     pass

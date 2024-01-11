@@ -87,7 +87,7 @@ def page_2_experiment_design():
             step=0.01,
             key="exp_design_alpha",
             format="%.2f",
-            )
+        )
 
     with col12:
         st.number_input(
@@ -97,7 +97,7 @@ def page_2_experiment_design():
             step=0.01,
             key="exp_design_beta",
             format="%.2f",
-            )
+        )
 
     st.number_input(
         "Treatment share (e.g., 50.0 = 50%)",

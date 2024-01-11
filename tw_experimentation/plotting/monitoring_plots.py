@@ -26,8 +26,7 @@ MAX_N_POINTS = 8000
 def plotly_reduce_n_points_per_trace(
     fig: go.Figure, max_n_points: int = 5000, min_n_points_per_trace: int = 200
 ):
-    """
-    Reduces the number of data points in a Plotly figure to improve memory usage.
+    """Reduces the number of data points in a Plotly figure to improve memory usage.
 
     Args:
         fig (plotly.graph_objs.Figure): The Plotly figure to be modified.
@@ -63,8 +62,8 @@ def plotly_reduce_n_points_per_trace(
 
 
 def plotly_light_memory(max_n_points=5000, min_n_points_per_trace=200):
-    """
-    Decorator that reduces the number of points in a Plotly figure to optimize memory usage.
+    """Decorator that reduces the number of points in a Plotly figure to optimize memory
+    usage.
 
     Args:
         max_n_points (int, optional): The maximum number of points allowed in the figure. Defaults to 5000.
@@ -94,11 +93,11 @@ def fig_variant_segment_dependence(
     ed: ExperimentDataset,
     text_auto=False,
 ):
-    """Heatmap for chi-squared test of dependence between variant and segment
-    Normalises the color by setting the midpoint of the colorscale to
-    the 95% quantile of the chi-squared distribution divided by degrees of freedom.
-    Hence, a cell achieves above a heat at the colorscale midpoint if all
-    cells had the same value, then the test has a p-value of .05.
+    """Heatmap for chi-squared test of dependence between variant and segment Normalises
+    the color by setting the midpoint of the colorscale to the 95% quantile of the chi-
+    squared distribution divided by degrees of freedom. Hence, a cell achieves above a
+    heat at the colorscale midpoint if all cells had the same value, then the test has a
+    p-value of .05.
 
     Args:
         chi_squared_table (pd.DataFrame): table of N(0,1) distributed statistics
@@ -166,8 +165,7 @@ def plot_sample_size_pie(ed: ExperimentDataset):
 
 @plotly_light_memory(max_n_points=MAX_N_POINTS)
 def plot_dynamic_sample_size(df_dynamic_sample: pd.DataFrame, ed: ExperimentDataset):
-    """
-    Plots the sample size per variant over time.
+    """Plots the sample size per variant over time.
 
     Args:
         df_dynamic_sample (pd.DataFrame): A DataFrame containing the sample size data.
@@ -231,9 +229,7 @@ def target_metric_distribution(
 
 @plotly_light_memory(max_n_points=MAX_N_POINTS)
 def plot_target_metric_cdf(ed: ExperimentDataset, target: str, use_log: bool = False):
-    """
-    Plots the cumulative density function (CDF) for a given target variable.
-    """
+    """Plots the cumulative density function (CDF) for a given target variable."""
     fig = px.ecdf(
         ed.data,
         x=target,
@@ -256,8 +252,7 @@ def plot_target_metric_cdf(ed: ExperimentDataset, target: str, use_log: bool = F
 def plot_qq_variants(
     qq_variants: Dict[str, np.ndarray], ed: ExperimentDataset, target: str
 ) -> go.Figure:
-    """
-    Plots a Q-Q plot for a given target between different variants.
+    """Plots a Q-Q plot for a given target between different variants.
 
     Args:
         qq_variants (Dict[str, np.ndarray]): A dictionary containing the quantiles  for each variant.
@@ -441,8 +436,8 @@ def plot_qq_normal(
     target: str,
     standardized_residuals: Dict[str, Dict[int, np.ndarray]],
 ) -> go.Figure:
-    """
-    Plots a quantile-quantile plot for a given target variable and its standardized residuals for each variant in the experiment.
+    """Plots a quantile-quantile plot for a given target variable and its standardized
+    residuals for each variant in the experiment.
 
     Args:
         ed (ExperimentDataset): The experiment dataset containing the data for each variant.

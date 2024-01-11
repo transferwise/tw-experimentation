@@ -1,6 +1,3 @@
-from tw_experimentation.variance_reduction.variance_reduction_method import (
-    VarianceReductionMethod,
-)
 from tw_experimentation.variance_reduction.cuped import (
     CUPED,
 )
@@ -23,7 +20,7 @@ class CUPAC(CUPED):
         model=HistGradientBoostingRegressor,  # TODO: typing
         model_init_config: dict = {},
         model_fit_config: dict = {},
-        **kwargs
+        **kwargs,
     ) -> Self:
         """Applies CUPAC to data.
 

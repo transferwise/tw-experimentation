@@ -1,4 +1,3 @@
-import pandas as pd
 import numpy as np
 
 
@@ -6,32 +5,13 @@ from tw_experimentation.utils import ExperimentDataset, highlight
 from tw_experimentation.statistical_tests import FrequentistTest
 
 from tw_experimentation.setuper import Setuper, effect_size_to_uplift
-from tw_experimentation.checker import Monitoring
 from tw_experimentation.segmentation_frequentist import Segmentation
-from tw_experimentation.plotting.monitoring_plots import (
-    fig_variant_segment_dependence,
-)
-from scipy.stats import chi2_contingency
 
-
-import matplotlib.pyplot as plt
-import plotly.express as px
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 
 import ipywidgets as widgets
-from ipywidgets import (
-    VBox,
-    HBox,
-    interact,
-    interactive,
-    interactive_output,
-    Label,
-    FloatSlider,
-    FloatText,
-    Select,
-    SelectMultiple,
-)
+from ipywidgets import interact
+
 from IPython.display import display
 
 METRIC_TYPE_OPTIONS = [
@@ -48,14 +28,6 @@ class MonitoringInterface:
         # self.monitor = Monitoring(self.ed)
         # self.monitor._plot_sample_ratio_mismatch()
         # self.monitor.target_monitoring()
-
-        extra_cols = (
-            set(self.ed.data.columns)
-            - set(self.ed.targets)
-            - set([self.ed.date])
-            - set([self.ed.variant])
-            - set([DAY_COL])
-        )
         """
         self.monitor_metric_wt = widgets.SelectMultiple(
             options=extra_cols, description="Outcome"
@@ -74,195 +46,6 @@ class MonitoringInterface:
         def plot_segment(target, segment):
             self.monitor.segment_monitoring(target, segment)
         """
-
-    # TODO: Delete commented code, if unused
-    # def segments_checks(self, segments):
-    #     title_wt = widgets.HTML(value="<h2><b>Experiment Monitoring</b></h2>")
-    #     display(title_wt)
-    #     m = Monitoring(ed=self.ed)
-    #     df_dyn = m.dynamic_sample_size_descriptives()
-
-    #     sample_size_today = m.total_sample_size_now()
-
-    #     msg_global = f"<h3> Sample Size</h3>"
-    #     for k in range(len(sample_size_today)):
-    #         msg_global += f"Variant {k}"
-    #         if k == 0:
-    #             msg_global += " (Control)"
-    #         msg_global += f": {sample_size_today.iloc[k,0]}</br>"
-
-    #     msg_global += f"Total Sample Size: {sample_size_today.sum().iloc[0]}"
-
-    #     chi_squared_global_wt = widgets.HTML(value=msg_global)
-    #     display(chi_squared_global_wt)
-    #     g = sns.lineplot(
-    #         data=df_dyn,
-    #         x=self.ed.date,
-    #         y="variant_cnt",
-    #         hue=self.ed.variant,
-    #         palette="dark",
-    #     )
-    #     plt.xticks(rotation=45)
-    #     plt.show()
-    #     p_values = {"segment": [], "p-value": []}
-    #     chi_squared_plots = []
-    #     for segment in segments:
-    #         # Chi-squared-test
-    #         contingency_table = pd.crosstab(
-    #             self.ed.data[self.ed.variant], self.ed.data[segment]
-    #         )
-    #         chi2, p_value, _, expected = chi2_contingency(contingency_table)
-    #         p_values["segment"].append(segment)
-    #         p_values["p-value"].append(p_value)
-    #         p_values_table = pd.DataFrame.from_dict(p_values)
-    #         p_values_table["is significant"] = False
-    #         p_values_table["decision"] = (
-    #             "Independence hypothesis between group number and segment value cannot"
-    #             " be rejected"
-    #         )
-    #         # plot chi squared visualisation
-    #         chi_squared_stat_table = m.chi_squared_table(segment)
-    #         fig = fig_variant_segment_dependence(chi_squared_stat_table, self.ed)
-    #         chi_squared_plots.append(fig)
-
-    #     p_values_table.loc[p_values_table["p-value"] < 0.05, "is significant"] = True
-    #     p_values_table.loc[p_values_table["p-value"] < 0.05, "decision"] = (
-    #         "Dependence between group number and segment value (The segment is"
-    #         " distributed disproportionally along the groups)"
-    #     )
-    #     msg = (
-    #         f"<h3> Distribution test </h3>The <b>Chi-squared-test</b> that there is no"
-    #         f" association or relationship between the variant and the segment in an"
-    #         f" A/B test has p-values"
-    #     )
-    #     display(widgets.HTML(value=msg))
-    #     display(
-    #         p_values_table.style.set_table_attributes(
-    #             "style='display:inline'"
-    #         ).applymap(
-    #             lambda v: "color:green;" if v is True else "color:red;",
-    #             subset=["is significant"],
-    #         )
-    #     )
-    #     # fig = make_subplots(rows=1, cols=len(segments))
-    #     # for k in range(len(chi_squared_plots)):
-    #     #    fig.add_trace(chi_squared_plots[k].data[0], row=1, col=k + 1)
-    #     for fig in chi_squared_plots:
-    #         display(fig)
-
-    #     for segment in segments:
-    #         msg = f"<h3> {segment} </h3>"
-    #         display(widgets.HTML(value=msg))
-    #         df_dyn_seg = m.dynamic_sample_size_descriptives(segment=segment)
-    #         fig = px.line(
-    #             df_dyn_seg,
-    #             x=self.ed.date,
-    #             y="variant_cnt",
-    #             color=self.ed.variant,
-    #             facet_row=segment,
-    #             width=600,
-    #             height=600,
-    #         )
-    #         fig.show()
-
-    #         fig, axes = plt.subplots(1, figsize=(6, 4))
-
-    #         sns.histplot(
-    #             data=self.ed.data,
-    #             x=self.ed.data[segment],
-    #             hue=self.ed.variant,
-    #             palette="bright",
-    #             multiple="dodge",
-    #             alpha=0.3,
-    #         )
-    #         fig.tight_layout(pad=2.0)
-    #         plt.suptitle("Distribution of " + segment)
-    #         fig.show()
-
-    # def segment_check(self, segment=None):
-    #     m = Monitoring(ed=self.ed)
-    #     plt.show()
-    #     if segment is not None:
-    #         sample_size_segments = m.total_sample_size_now(segment=segment)
-    #         vals_segment = dict(self.ed.data[segment].value_counts().apply(int))
-    #
-    #         # Chi-squared-test
-    #         contingency_table = pd.crosstab(
-    #             self.ed.data[self.ed.variant],
-    #             self.ed.data[segment]
-    #         )
-    #         chi2, p_value, _, expected = chi2_contingency(contingency_table)
-    #
-    #         msg = f"<h1> Segment monitoring </h1> <h3> Distribution test </h3>The <b>Chi-squared-test</b> that there is no association or relationship between the variant and the segment in an A/B test <b>{segment}</b> has p-value"
-    #         msg += f"</br> p-value {p_value:.3f}"
-    #         msg += "<h3> Sample Size</h3>"
-    #         for k in vals_segment.keys():
-    #             msg += f"<b>{k}</b>: <br>"
-    #             for j in range(len(sample_size_segments.xs(k, level=1))):
-    #                 msg += f"Variant {j}"
-    #                 if j == 0:
-    #                     msg += " (Control)"
-    #                 msg += f": {sample_size_segments.xs(k, level=1).iloc[j,0]}</br>"
-    #
-    #         segment_pvals_wt = widgets.HTML(value=msg, hue=self.ed.variant)
-    #         display(segment_pvals_wt)
-    #
-    #         df_dyn_seg = m.dynamic_sample_size_descriptives(segment=segment)
-    #         # g_seg = sns.FacetGrid(
-    #         #    df_dyn_seg, row=segment, hue=self.ed.variant, aspect=2
-    #         # )
-    #         # g_seg.map(sns.lineplot, self.ed.date, "variant_cnt")
-    #         # plt.xticks(
-    #         #    rotation=45,
-    #         #    horizontalalignment="right",
-    #         #    fontweight="light",
-    #         # )
-    #         fig = px.line(
-    #             df_dyn_seg,
-    #             x=self.ed.date,
-    #             y="variant_cnt",
-    #             color=self.ed.variant,
-    #             facet_row=segment,
-    #             width=600,
-    #             height=600,
-    #         )
-    #         fig.show()
-    #
-    #         fig, axes = plt.subplots(1, figsize=(6, 4))
-    #
-    #         sns.histplot(
-    #             data=self.ed.data,
-    #             x=self.ed.data[segment],
-    #             hue=self.ed.variant,
-    #             palette="bright",
-    #             multiple="dodge",
-    #             alpha=0.3,
-    #         )
-    #         fig.tight_layout(pad=2.0)
-    #         plt.suptitle("Distribution of " + segment)
-    #         plt.show()
-
-    # display(chi_squared_gloabl_wt)
-
-    # return VBox([title_wt] + list(freqs.values()))
-
-    # freq_box = widgets.HBox(list(freqs.values()))
-    # target_frequencies = [freqs[j].value for j in range(self.ed.n_variants)]
-    # m = Monitoring(ed=self.ed)
-    # ss_plot_wt = widgets.interactive_output(m._plot_sample_size, {})
-    # chi_squared_wt = widgets.HTML(value=f"Chi-Squared-Test p-value: {p_val:.3f}")
-    # ss_numbers_wt = widgets.HTML(value=f"Chi-Squared-Test p-value: {p_val:.3f}")
-    # @widgets.interact(**freqs)
-    # def global_sample_size(**kwargs):
-    #    m = Monitoring(ed=self.ed)
-    #    p_val = m._chi_squared_global(f_exp=list(kwargs.values()))
-    #    return p_val
-
-    # widgets.interact(global_sample_size, **freqs)
-    # global_wt = widgets.HBox([ss_plot_wt, chi_squared_wt])
-    # exp_monitor = widgets.VBox([title_wt, freq_box, global_wt])
-
-    # display(exp_monitor)
 
 
 class SegmentationInterface:
@@ -334,7 +117,7 @@ class SampleSizeInterface:
         )
         self.type_widget = widgets.ToggleButtons(
             options=METRIC_TYPE_OPTIONS,
-            description=f"Key outcome metric type:",
+            description="Key outcome metric type:",
             disabled=False,
             style=dict(description_width="initial"),
         )
@@ -368,7 +151,7 @@ class SampleSizeInterface:
 
         self.et_widget = widgets.ToggleButtons(
             options=["absolute", "relative"],
-            description=f"Effect type:",
+            description="Effect type:",
             disabled=False,
             style=dict(description_width="initial"),
         )
@@ -493,15 +276,18 @@ class SampleSizeInterface:
                 )
                 fig.update_xaxes(title_text="Sample Size")
                 fig.update_yaxes(title_text="Minimum Detectable Uplift")
-
-            result_wt = widgets.HTML(
-                value=(
-                    "<h2>Total Sample Size:"
-                    f" {sample_size['Treatment Sample Size'] + sample_size['Control Sample Size']}</h2><h3>Treatment"
-                    f" Sample Size: {sample_size['Treatment Sample Size']}<br> Control"
-                    f" Sample Size: {sample_size['Control Sample Size']}</h3>"
-                )
+            sample_size_total = (
+                sample_size["Treatment Sample Size"]
+                + sample_size["Control Sample Size"]
             )
+            widget_val = (
+                "<h2>Total Sample Size:"
+                f" {sample_size_total}"
+                "</h2><h3>Treatment"
+                f" Sample Size: {sample_size['Treatment Sample Size']}<br> Control"
+                f" Sample Size: {sample_size['Control Sample Size']}</h3>"
+            )
+            result_wt = widgets.HTML(value=widget_val)
             display(result_wt)
             display(fig)
 
@@ -629,14 +415,6 @@ class FrequentistEvaluation:
         display(title_wt_freq)
 
         if self.ed.n_variants > 2:
-            # mt_widget = widgets.Dropdown(
-            #    options=["No", "Yes"],
-            #    description="Multitest correction:",
-            #    disabled=False,
-            #    value="No",
-            # )
-            # display(mt_widget)
-
             interact(
                 self._frequentist_process,
                 has_correction=widgets.Dropdown(
@@ -647,10 +425,7 @@ class FrequentistEvaluation:
                     style=dict(description_width="initial"),
                 ),
             )
-            # self.correction = mt_widget.value
-        # run_frequentist_bn = widgets.Button(description="Run hypothesis test!")
-        # run_frequentist_bn.on_click(self._frequentist_process)
-        # self._frequentist_process()
+
         else:
             self._frequentist_process(False)
 
@@ -668,32 +443,3 @@ class FrequentistEvaluation:
             .bar(subset=["Estimated_Effect_relative"], color="grey")
             .format(precision=3)
         )
-
-
-# class BayesianEvaluation:
-#     def __init__(self, ed) -> None:
-#         self.ed = ed
-#         self.bt = BayesTest(ed=ed)
-#
-#     def start(self):
-#         DEFAULT_KEY_VARIABLES = {
-#             "binary": ["probs"],
-#             "continuous": ["loc", "gate"],
-#             "discrete": ["rate", "gate"],
-#         }
-#
-#         self.bt.compute_posterior()
-#         for target in self.ed.targets:
-#             self.bt.plot_posterior(
-#                 target=target,
-#                 likelihood_variables=DEFAULT_KEY_VARIABLES[
-#                     self.ed.metric_types[target]
-#                 ],
-#             )
-#
-#             figures = self.bt.plot_posterior_difference(
-#                 target=target,
-#                 likelihood_variables=DEFAULT_KEY_VARIABLES[
-#                     self.ed.metric_types[target]
-#                 ],
-#             )

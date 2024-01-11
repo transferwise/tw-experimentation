@@ -21,8 +21,7 @@ from IPython.display import display
 
 @dataclass
 class SegmentationOutput:
-    """
-    Represents the output of a segmentation analysis.
+    """Represents the output of a segmentation analysis.
 
     Attributes:
         segments (List[str]): List of segment names.
@@ -44,8 +43,7 @@ class SegmentationOutput:
     def segment_output(
         self, category: str, multitest_correction="bonferroni", alpha=0.05
     ) -> pd.DataFrame:
-        """
-        Returns the results table for a specific segment.
+        """Returns the results table for a specific segment.
 
         Args:
             segment (str): The name of the segment.
@@ -169,7 +167,8 @@ class SegmentationNew:
         max_depth: int = 3,
         min_segments: int = 2,
     ):
-        """Fit method for wise pizza to get wise pizza results and frequentist analysis of segments
+        """Fit method for wise pizza to get wise pizza results and frequentist analysis
+        of segments.
 
         Args:
             treatment (int, optional): name of variant at consideration. Defaults to 1.
@@ -315,7 +314,8 @@ class Segmentation:
         min_segments: int = 3,
         auto_display_df=True,
     ):
-        """Fit method for wise pizza to get wise pizza results and frequentist analysis of segments
+        """Fit method for wise pizza to get wise pizza results and frequentist analysis
+        of segments.
 
         Args:
             treatment (int, optional): name of variant at consideration. Defaults to 1.

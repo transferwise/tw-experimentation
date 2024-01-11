@@ -68,8 +68,8 @@ def page_4_experiment_evaluation():
             st.session_state["evaluation_alpha"] = 5.0
         alpha = st.session_state.evaluation_alpha
         st.markdown(
-            """ 
-            In case you have multiple treatment variants, you will have the option to perform a multi-test correction on the p-values 
+            """
+            In case you have multiple treatment variants, you will have the option to perform a multi-test correction on the p-values
             (current implementation: Bonferroni method. This is subject to change in the future).
             """
         )
@@ -125,7 +125,7 @@ def page_4_experiment_evaluation():
                 on_change=swap_checkbox_state,
                 args=("evaluate_CUPED",),
                 help="""
-            CUPED is a variance reduction method leveraging pre-experiment data in order to increase the sensitivity of an A/B test. 
+            CUPED is a variance reduction method leveraging pre-experiment data in order to increase the sensitivity of an A/B test.
             The basic idea is to use pre-experiment data as a control variate in the test;  the pre-experiment data is used to transform the target variable so that its variability is lowered after which we apply the standard/vanilla T-test to the transformed target.
             """,
             )
@@ -171,27 +171,27 @@ def page_4_experiment_evaluation():
                 st.divider()
         st.subheader("Segmentation with Wise Pizza")
         st.markdown(
-            """ 
+            """
             - In this section you can find unusual segments in terms of the difference between the control and test groups
             - Please provide segments which you want to analyse, metric to analyse and number of observations
             """
         )
 
         st.markdown(
-            """ 
+            """
             Find segments whose average is most different from the global one
 
             - `segments`: List of discrete dimensions to find slices
             - `target`: Metric to analyse
-            - `treatment`: If you have different test groups, specify group here, for example treatment=1 means 
+            - `treatment`: If you have different test groups, specify group here, for example treatment=1 means
             we compare with first treatment group
             - `min_segments`: Minimum number of segments to find
             - `max_depth`: Maximum number of dimension to constrain in segment definition
-                
-                
-            *Warning*: The p-values are currently not corrected for multiple comparisons. 
-            However, Wise-Pizza identifies segments as interesting only if the treatment effect is sufficiently high 
-            compared to the segment sample size so this selection is a first approximation of avoiding 
+
+
+            *Warning*: The p-values are currently not corrected for multiple comparisons.
+            However, Wise-Pizza identifies segments as interesting only if the treatment effect is sufficiently high
+            compared to the segment sample size so this selection is a first approximation of avoiding
             p-value inflation in segmentation analysis.
             """
         )
@@ -235,7 +235,7 @@ def page_4_experiment_evaluation():
                 st.write("Expand figure below to fullscreen for best view.")
 
                 st.markdown(
-                    """ 
+                    """
                     #### How can I interpret the results?
 
                     - We are trying to find unusual segments in terms of the averages (***to highlight the segments contributing the most to the difference between test and control***)
@@ -262,7 +262,7 @@ def page_4_experiment_evaluation():
             st.write("No segments available for frequentist segmentation analysis")
         else:
             st.markdown(
-                """ 
+                """
                 #### How can I interpret the results?
 
                 - For each variant we compare it with the control group
@@ -293,8 +293,10 @@ def page_4_experiment_evaluation():
                 st.dataframe(s)
     elif not st.session_state["is_experiment"]:
         st.write(
-            "You have only provided pre-experiment data. "
-            'Please define the experiment in "Experiment Design" first to use Experiment Evaluation.'
+            """You have only provided pre-experiment data.
+            Please define the experiment in "Experiment Design"
+            first to use Experiment Evaluation.
+            """
         )
 
     else:

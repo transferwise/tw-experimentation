@@ -5,13 +5,13 @@ import pandas as pd
 import numpy as np
 from numpy.distutils.misc_util import is_sequence
 from itertools import repeat
-from sklearn.utils import resample
 
 from tw_experimentation.constants import PLOTLY_COLOR_PALETTE, MetricType
 
 
 def highlight(df):
-    """Highlight significant results in green, non-significant in red for frequentist stat table"""
+    """Highlight significant results in green, non-significant in red for frequentist
+    stat table."""
     if df["is_significant"]:
         if df["Estimated_Effect_relative"] > 0:
             return ["background-color: lightgreen"] * len(df)
@@ -38,7 +38,7 @@ def hex_to_rgb(hex_color: str) -> tuple:
 
 
 def variant_name_map(n_variants: int):
-    """Name variants to be used in plots
+    """Name variants to be used in plots.
 
     Args:
         n_variants (int): Number of variants, includes control
@@ -122,24 +122,30 @@ class ExperimentDataset:
         is_dynamic_observation: Union[Optional[bool], None] = None,
         is_only_pre_experiment: Optional[bool] = False,
     ) -> None:
-        """
-        Implements data logic for A/B testing. Assumes that observations are already on experiment analysis level.
+        """Implements data logic for A/B testing. Assumes that observations are already
+        on experiment analysis level.
 
         Args:
             data (pd.DataFrame): data with columns variant, target, date
             variant (str): variant column name
             targets (Union[str, List[str]]): target column name(s)
-            pre_experiment_cols (Optional[List[str]], optional): pre-experimental data columns. Defaults to None.
-            metric_types (Optional[dict[str, str]], optional): metric types ('binary', 'discrete', or 'continuous').
-                Defaults to None.
+            pre_experiment_cols (Optional[List[str]], optional):
+                pre-experimental data columns. Defaults to None.
+            metric_types (Optional[dict[str, str]], optional):
+                metric types ('binary', 'discrete', or 'continuous'). Defaults to None.
             date (Optional[str], optional): timestamp column. Defaults to None.
-            ratio_targets (Optional[dict[str, tuple]], optional): ratio targets with numerator and denominator in tuple.
+            ratio_targets (Optional[dict[str, tuple]], optional):
+                ratio targets with numerator and denominator in tuple.
                 Not implemented yet. Defaults to None.
-            n_variants (Optional[int], optional): Number of variants TODO: autodetect this. Defaults to 2.
-            control_label (Optional[str], optional): Label of the control group variant. Defaults to 0.
-            is_dynamic_observation (Optional[bool], optional): Whether the assignment are dynamic
+            n_variants (Optional[int], optional): Number of variants
+                TODO: autodetect this. Defaults to 2.
+            control_label (Optional[str], optional): Label of the control group variant.
+                Defaults to 0.
+            is_dynamic_observation (Optional[bool], optional):
+                Whether the assignment are dynamic
                 (for monitoring and sequential analysis). Defaults to True.
-            is_only_pre_experiment (Optional[bool], optional): Whether it only uses pre-experimental data.
+            is_only_pre_experiment (Optional[bool], optional):
+                Whether it only uses pre-experimental data.
         """
         # e.g. ratio_targets {'volume_per_transaction':
         # (total_volumes_per_customer, n_transactions_per_customer)}
@@ -189,7 +195,8 @@ class ExperimentDataset:
         assert (
             self.is_only_pre_experiment is False
         ), "Can only preprocess data from experiment"
-        # TODO: check if variant = 0,1[,2,...] or string. If the latter, ask for name of control group
+        # TODO: check if variant = 0,1[,2,...] or string.
+        # If the latter, ask for name of control group
         # For now, assume that control = 0, treatment = 1,2,3,...
 
         # TODO: Convert date column to datetime
@@ -198,7 +205,7 @@ class ExperimentDataset:
             assert 0 in list(self.data[self.variant].unique()) and 1 in list(
                 self.data[self.variant].unique()
             )
-        except:
+        except Exception as e:  # noqaF841
             raise Exception("Variants must be 0 (=control), 1,[2,...] (=treatment)")
 
         experiment_cols = [
@@ -256,7 +263,8 @@ class ExperimentDataset:
         ), "Binary metric types must consist of values 0 or 1"
 
     def _detect_is_dynamic_observation(self):
-        """Detect whether the assignment of variants is dynamic (for monitoring and sequential analysis)"""
+        """Detect whether the assignment of variants is dynamic (for monitoring and
+        sequential analysis)"""
         if self.date is not None and self.data[self.date].nunique() > 1:
             self.is_dynamic_observation = True
         else:
@@ -308,7 +316,7 @@ class ExperimentDataset:
                             self.metric_types[metric] = MetricType.DISCRETE.value
                     else:
                         self.metric_types[metric] = MetricType.CONTINUOUS.value
-                except Exception as TypeError:
+                except Exception as TypeError:  # noqaF841
                     print(error_msg)
             else:
                 raise TypeError(error_msg)
@@ -359,7 +367,7 @@ class ExperimentDataset:
 
     @property
     def target_standard_deviations(self):
-        """Compute standard deviation of each target for control group"""
+        """Compute standard deviation of each target for control group."""
         return {
             target: self.data.loc[self.data[self.variant] == 0, target].std()
             for target in self.targets

@@ -77,7 +77,9 @@ def bootstrap_generator(
         yield data.sample(n=sample_size, replace=True)
 
 
-# NOTE: Say the sample split is 0.3, i think that for some data the control will be 0.3 and for some it will be the treatment, depending on which will end up first when unique() is taken
+# NOTE: Say the sample split is 0.3, i think that for some data the control will be
+# 0.3 and for some it will be the treatment,
+# depending on which will end up first when unique() is taken
 def subsample_generator(
     data: pd.DataFrame,
     sample_size: int,
@@ -94,7 +96,8 @@ def subsample_generator(
         sample_size (int): sample size of each subsample
         n_bootstrap (int): number of subsamples
         treatment_col (str): name of treatment column
-        sample_split (bool, optional): custom sample split proportion. Defaults to False.
+        sample_split (bool, optional): custom sample split proportion.
+            Defaults to False.
 
     Yields:
         pd.DataFrame: A subsample of experiment data.
@@ -126,7 +129,7 @@ def subsample_generator(
 
 
 def split_dataframe(df: pd.DataFrame, K: int) -> List[np.array]:
-    """Splits a dataframe into K splits uniformly at random
+    """Splits a dataframe into K splits uniformly at random.
 
     Args:
         df (pd.DataFrame): data
@@ -220,15 +223,18 @@ def subsample_data(
 
 
 def aaify(data: pd.DataFrame, treatment_column: str, frac_control=False):
-    """Turn an A/B experiment data into A/A experiment data by randomly assigning treatment to control.
+    """Turn an A/B experiment data into A/A experiment data by randomly assigning
+    treatment to control.
 
     Args:
         data (pd.DataFrame): experiment data
         treatment_column (str): name of column containing treatment flags
-        frac_control (bool, optional): fraction of data to be assigned to control. Defaults to False. # TODO: typing
+        frac_control (bool, optional): fraction of data to be assigned to control.
+            Defaults to False. # TODO: typing
 
     Returns:
-        pd.DataFrame: experiment data with treatment filtered out and new treatment assignment
+        pd.DataFrame: experiment data with treatment filtered out
+            and new treatment assignment
     """
 
     aa_df = data.loc[data[treatment_column] == 0]
@@ -245,7 +251,10 @@ def aaify(data: pd.DataFrame, treatment_column: str, frac_control=False):
 
 
 def add_synthetic_effect(
-    data: pd.DataFrame, treatment_column: str, target_column: str, effect_size: float
+    data: pd.DataFrame,
+    treatment_column: str,
+    target_column: str,
+    effect_size: float,
 ):
     """Add a synthetic effect to the experiment data.
 
@@ -259,14 +268,12 @@ def add_synthetic_effect(
         pd.DataFrame: experiment data with synthetic effect
     """
 
-    N = len(data)
-
     synthetic_effect_data = data.copy()
 
     synthetic_effect_data[target_column] = (
         synthetic_effect_data[target_column]
         + synthetic_effect_data[treatment_column] * effect_size
-    )  # + np.random.normal(0, 1, size=N)
+    )
 
     return synthetic_effect_data
 

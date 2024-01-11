@@ -13,7 +13,7 @@ class MultivariateRegression(VarianceReductionMethod):
         treatment_column: str,
         target_column: str,
         covariate_columns: List[str],
-        **kwargs
+        **kwargs,
     ):
         """Apply Multivariate Regression to data.
 
@@ -85,7 +85,8 @@ class MultivariateRegression(VarianceReductionMethod):
         )
 
     def calculate_ci_width_reduction(self, alpha=0.05):
-        """Calculate the width reduction rate in 1-`alpha` * 100% confidence interval."""
+        """Calculate the width reduction rate in 1-`alpha` * 100% confidence
+        interval."""
 
         frac = self.ci_width(self.regression_results, alpha) / self.ci_width(
             self.baseline_results, alpha
@@ -106,7 +107,7 @@ class MultivariateRegressionAdjusted(VarianceReductionMethod):
         treatment_column: str,
         target_column: str,
         covariate_columns: List[str],
-        **kwargs
+        **kwargs,
     ):
         """Apply Multivariate Regression to data.
 
@@ -192,7 +193,8 @@ class MultivariateRegressionAdjusted(VarianceReductionMethod):
         )
 
     def calculate_ci_width_reduction(self, alpha=0.05):
-        """Calculate the width reduction rate in 1-`alpha` * 100% confidence interval."""
+        """Calculate the width reduction rate in 1-`alpha` * 100% confidence
+        interval."""
 
         frac = self.ci_width(self.regression_results, alpha) / self.ci_width(
             self.baseline_results, alpha

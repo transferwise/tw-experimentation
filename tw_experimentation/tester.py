@@ -1,15 +1,13 @@
-"""
-Tool for testing ab experiments using different approaches for several metrics.
-Code contains Tester class with methods for specific tests.
-Support only pandas DataFrames now.
+"""Tool for testing ab experiments using different approaches for several metrics.
+
+Code contains Tester class with methods for specific tests. Support only pandas
+DataFrames now.
 """
 
 import pandas as pd
 import numpy as np
 from statsmodels import stats as sms
 from scipy import stats as scipystats
-import statsmodels.stats.weightstats as smws
-import matplotlib.pyplot as plt
 
 from sklearn.utils import resample
 
@@ -48,10 +46,8 @@ class BinaryTest:
         }
 
     def contingency_table(self):
-        """
-        Output contingency table of outcome for treatment and control
-        :return: 2x2 DataFrame
-        """
+        """Output contingency table of outcome for treatment and control :return: 2x2
+        DataFrame."""
         ct = pd.crosstab(self.df[self.treatment], self.df[self.metric])
         idx = pd.Index(["Control", "Treatment"], name=None)
         ct.index = idx
@@ -89,18 +85,13 @@ class BinaryTest:
         }
 
     def fishers_exact_test(self, direction="two-sided"):
-        """
-        Fisher's exact test
-        :param df: DataFrame
-        :param treatment: str
-            treatment name
-        :param metric: str
-            outcome name
-        :param direction:
-            Options:
+        """Fisher's exact test :param df: DataFrame :param treatment: str treatment name
+        :param metric: str outcome name :param direction:
+
+        Options:
                 ‘two-sided’: the odds ratio of the underlying population is not one
                 ‘less’: the odds ratio of the underlying population is less than one
-                ‘greater’: the odds ratio of the underlying population is greater than one
+                ‘greater’: the odds ratio of the underlying population is greater than 1
         :return: SignificanceResult
                     statistic: float
                     pvalue: float
@@ -176,8 +167,8 @@ class ContinuousTest:
         return eval("self." + self.config_tests[self.method] + "()")
 
     def mann_whitney_u_test(self):
-        """
-        Mann-Whitney-U test.
+        """Mann-Whitney-U test.
+
         To be used when sample sized is expected to be skewed / not normally distributed
         :return:
             statistic: float
@@ -339,8 +330,8 @@ class ConfidenceIntervals:
 
 
 class Tester:
-    """
-    Tool for analysing AB tests
+    """Tool for analysing AB tests.
+
     Result includes:
         - Statistical result
     """
@@ -355,9 +346,7 @@ class Tester:
         continuous_metrics: Union[List[str], None] = None,
         customer_features: Union[List[str], None] = None,
     ):
-        """
-        Tester constructor.
-        """
+        """Tester constructor."""
         self.df = df
         self.user_id_column = user_id_column
         self.treatment = treatment
@@ -396,7 +385,7 @@ class Tester:
                     for metric in self.binary_metrics
                 ]
             )
-            if not self.binary_metrics is None
+            if self.binary_metrics is not None
             else {}
         )
 
@@ -418,7 +407,7 @@ class Tester:
                     for metric in self.continuous_metrics
                 ]
             )
-            if not self.continuous_metrics is None
+            if self.continuous_metrics is not None
             else {}
         )
 
@@ -426,9 +415,9 @@ class Tester:
         #  bonferroni method
         if mult_hyp_correction:
             n_hypotheses = 0
-            if not self.binary_metrics is None:
+            if self.binary_metrics is not None:
                 n_hypotheses += len(self.binary_metrics)
-            if not self.continuous_metrics is None:
+            if self.continuous_metrics is not None:
                 n_hypotheses += +len(self.continuous_metrics)
 
         alpha = alpha / n_hypotheses
@@ -439,26 +428,28 @@ class Tester:
             metric_type: Union[str, None] = None,
             method: Union[str, None] = None,
         ):
-            if not metrics is None:
+            if metrics is not None:
                 for metric in metrics:
                     if (
                         "effect_estimate" in results[metric]
-                        and not results[metric]["effect_estimate"] is None
+                        and results[metric]["effect_estimate"] is not None
                     ):
-                        results[metric]["confidence_interval_bootstrapped"] = (
-                            ConfidenceIntervals(
-                                df=self.df,
-                                user_id_column=self.user_id_column,
-                                treatment=self.treatment,
-                                metric=metric,
-                                metric_type=metric_type,
-                                method=method,
-                                action_date=self.action_date,
-                            ).bootstrap_confidence_interval(alpha=alpha)
+                        results[metric][
+                            "confidence_interval_bootstrapped"
+                        ] = ConfidenceIntervals(
+                            df=self.df,
+                            user_id_column=self.user_id_column,
+                            treatment=self.treatment,
+                            metric=metric,
+                            metric_type=metric_type,
+                            method=method,
+                            action_date=self.action_date,
+                        ).bootstrap_confidence_interval(
+                            alpha=alpha
                         )
                     if (
                         "pvalue" in results[metric]
-                        and not results[metric]["pvalue"] is None
+                        and results[metric]["pvalue"] is not None
                     ):
                         if results[metric]["pvalue"] < alpha:
                             results[metric]["Decision"] = "Reject H0"
@@ -475,37 +466,39 @@ class Tester:
             method_continuous,
         )
 
-        if not self.binary_metrics is None:
+        if self.binary_metrics is not None:
             for metric in self.binary_metrics:
                 if (
                     "effect_estimate" in binary_test_results[metric]
-                    and not binary_test_results[metric]["effect_estimate"] is None
+                    and binary_test_results[metric]["effect_estimate"] is not None
                 ):
-                    binary_test_results[metric]["confidence_interval_bootstrapped"] = (
-                        ConfidenceIntervals(
-                            df=self.df,
-                            user_id_column=self.user_id_column,
-                            treatment=self.treatment,
-                            metric=metric,
-                            metric_type="Binary",
-                            method=method_binary,
-                            action_date=self.action_date,
-                        ).bootstrap_confidence_interval(alpha=alpha)
+                    binary_test_results[metric][
+                        "confidence_interval_bootstrapped"
+                    ] = ConfidenceIntervals(
+                        df=self.df,
+                        user_id_column=self.user_id_column,
+                        treatment=self.treatment,
+                        metric=metric,
+                        metric_type="Binary",
+                        method=method_binary,
+                        action_date=self.action_date,
+                    ).bootstrap_confidence_interval(
+                        alpha=alpha
                     )
                 if (
                     "pvalue" in binary_test_results[metric]
-                    and not binary_test_results[metric]["pvalue"] is None
+                    and binary_test_results[metric]["pvalue"] is not None
                 ):
                     if binary_test_results[metric]["pvalue"] < alpha:
                         binary_test_results[metric]["Decision"] = "Reject H0"
                     else:
                         binary_test_results[metric]["Decision"] = "Accept H0"
 
-        if not self.continuous_metrics is None:
+        if self.continuous_metrics is not None:
             for metric in self.continuous_metrics:
                 if (
                     "effect_estimate" in continuous_test_results[metric]
-                    and not continuous_test_results[metric]["effect_estimate"] is None
+                    and continuous_test_results[metric]["effect_estimate"] is not None
                 ):
                     continuous_test_results[metric][
                         "confidence_interval_bootstrapped"
@@ -522,7 +515,7 @@ class Tester:
                     )
                 if (
                     "pvalue" in continuous_test_results[metric]
-                    and not continuous_test_results[metric]["pvalue"] is None
+                    and continuous_test_results[metric]["pvalue"] is not None
                 ):
                     if continuous_test_results[metric]["pvalue"] < alpha:
                         continuous_test_results[metric]["Decision"] = "Reject H0"
