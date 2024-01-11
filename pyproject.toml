@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tw-experimentation"
-version = "0.1.1.13"
+version = "0.1.2"
 description = "Wise AB platform"
 authors = ["Wise"]
 readme = "README.md"
