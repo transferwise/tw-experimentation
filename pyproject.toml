@@ -10,6 +10,10 @@ readme = "README.md"
 requires = ["setuptools", "wheel"]
 
 
+[tool.poetry.scripts]
+run_tw_experimentation_streamlit = "tw_experimentation.streamlit.run_streamlit_app_entry_point:main"
+
+
 [tool.pytest.ini_options]
 addopts = "--strict-markers -vv"
 markers = [
