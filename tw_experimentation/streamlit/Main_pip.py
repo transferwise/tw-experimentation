@@ -41,3 +41,6 @@ def run_streamlit_app():
       You can use different statistical tests and causal inference techniques.
       """
   )
+
+if __name__ == "__main__":
+    run_streamlit_app()
