@@ -5,9 +5,6 @@ import numpy as np
 from tw_experimentation.utils import ExperimentDataset
 from tw_experimentation.data_generation import RevenueConversion
 
-from tw_experimentation.statistical_tests import FrequentistTest, BaseTest
-
-from tw_experimentation.widgetizer import Monitoring, MonitoringInterface
 from tw_experimentation.checker import (
     Monitoring,
     SegmentMonitoring,

@@ -5,7 +5,6 @@ from tw_experimentation.bayes.bayes_model import BayesModel
 from tw_experimentation.data_generation import RevenueConversion
 
 
-import numpyro
 import numpyro.distributions as dist
 
 from jax import random
