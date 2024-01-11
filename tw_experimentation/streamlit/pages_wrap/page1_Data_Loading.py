@@ -14,7 +14,7 @@ import json
 import copy
 
 
-def page_1_data_loading():
+def page_1_data_loading(snowflake_connector=None):
     st.session_state.update(st.session_state)
 
     DATA_PAGE = "Data Loading"
@@ -151,7 +151,7 @@ def page_1_data_loading():
             ),
             on_change=swap_checkbox_state,
             args=("is_experiment",),
-            help="""If you have data from an experiment, you need to specify at least outcomes and variant. 
+            help="""If you have data from an experiment, you need to specify at least outcomes and variant.
             If you only have pre-experiment data, you only need to specify pre-experiment data metrics.""",
         )
         st.write(
@@ -227,7 +227,7 @@ def page_1_data_loading():
             key="pre_experiment_temp",
             help="""The pre-experiment data can be used for two things:
             1. For sample size calculations on the Experiment Design page;
-            2. the data is used to increase the sensitivity of an AB test (higher power). 
+            2. the data is used to increase the sensitivity of an AB test (higher power).
             This can be applied in the page Experiment Evaluation""",
         )
         if st.session_state["is_experiment"]:
@@ -316,8 +316,8 @@ def page_1_data_loading():
             st.write(
                 """
                      You can also generate the all results at this point. If you do not click the button,
-                     the output will be computed as you click through the pages. 
-                     Generating the results may take a while and you can decide to do it now or later. 
+                     the output will be computed as you click through the pages.
+                     Generating the results may take a while and you can decide to do it now or later.
                      """
             )
             if st.button("Compute results"):

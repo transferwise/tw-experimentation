@@ -31,6 +31,7 @@ from tw_experimentation.checker import (
 )
 from tw_experimentation.bayes.bayes_test import BayesTest
 
+from abc import ABC, abstractmethod
 import streamlit as st
 
 import pandas as pd
@@ -56,6 +57,70 @@ from tw_experimentation.constants import (
     RESULT_SCHEMA,
     RESULT_TABLE,
 )
+
+
+class SnowflakeConnection(ABC):
+    @property
+    @abstractmethod
+    def require_username(self):
+        pass
+
+    def load_table(
+        self,
+        sql_query=None,
+        source_database=SOURCE_DATABASE,
+        source_schema=SOURCE_SCHEMA,
+        source_table=SOURCE_TABLE,
+    ):
+        if sql_query is None:
+            sql_query = f"""
+                select * from {source_database}.{source_schema}.{source_table}
+                """
+        df = pd.read_sql(sql_query, self.connection)
+
+        return df
+
+    def close_connection(self):
+        if hasattr(self, "connection"):
+            self.connection.close()
+
+
+class SnowflakeIndividualCredentials(SnowflakeConnection):
+    def __init__(self, username: str, password: str):
+        self.username = username
+        self.password = password
+
+    @property
+    def require_username(self):
+        return True
+
+    def connect(
+        self,
+        user=USERNAME,
+        account=ACCOUNT,
+        region=REGION,
+        authenticator=AUTHENTICATOR,
+        database=DATABASE,
+        warehouse=WAREHOUSE,
+        restart_engine=False,
+    ):
+        if self.engine is None or self.connection is None or restart_engine:
+            self.engine = create_engine(
+                URL(
+                    account=account,
+                    region=region,
+                    user=user,
+                    authenticator=authenticator,
+                    database=database,
+                    warehouse=warehouse,
+                )
+            )
+            self.connection = self.engine.connect()
+        return self.conection
+
+    def dispose_engine(self):
+        if hasattr(self, "engine"):
+            self.engine.dispose()
 
 
 def fetch_data_from_table_name(warehouse: str, schema: str, table: str):
