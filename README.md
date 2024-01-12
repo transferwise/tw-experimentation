@@ -155,6 +155,9 @@ Now run the command `streamlit run Main.py` and the app should open in your brow
 
 Then you can use or test dataset from data/test_data.csv
 
+![plot](https://github.com/transferwise/tw-experimentation/blob/main/docs/images/data_loading_streamlit.png?raw=True)
+![plot](https://github.com/transferwise/tw-experimentation/blob/main/docs/images/evaluation_streamlit.png?raw=True)
+
 Tip on navigation:
 `ls` - show files in current directory
 `pwd` - print current directory address
