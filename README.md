@@ -35,7 +35,7 @@ The experimentation library can help you with:
 
 ![plot](https://github.com/transferwise/tw-experimentation/blob/main/docs/images/evaluation_notebook_2.png?raw=True)
 
-- Evaluation (Bayesian A/B testing) [link](https://github.com/transferwise/tw-experimentation/blob/main/notebooks/2a_evaluation_bayesian.ipynb) - here you can apply bayesian evaluation on your dataset/
+- Evaluation (Bayesian A/B testing) [link](https://github.com/transferwise/tw-experimentation/blob/main/notebooks/2a_evaluation_bayesian.ipynb) - here you can apply bayesian evaluation on your dataset
 
 ### 1. Designing experiments
 By using **TW Experimentation** you can design your experiments, choose sample size, evaluate the experiment.
