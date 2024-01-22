@@ -9,7 +9,6 @@ from tw_experimentation.statistical_tests import FrequentistTest, BaseTest
 from tw_experimentation.widgetizer import (
     FrequentistEvaluation,
     Segmentation,
-    SegmentationInterface,
 )
 
 from tw_experimentation.statistical_tests import cuped
