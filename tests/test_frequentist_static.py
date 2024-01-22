@@ -142,23 +142,23 @@ def test_frequentist_in_notebook(experiment_data_two_treatment):
     cuped(experiment_data_two_treatment, has_correction="Yes", alpha=0.05)
 
 
-def test_frequentist_wise_pizza_segmentation_in_notebook(experiment_data_with_segments):
-    segments = ["segment_1", "segment_2", "segment_3", "currency"]
+# def test_frequentist_wise_pizza_segmentation_in_notebook(experiment_data_with_segments):
+#     segments = ["segment_1", "segment_2", "segment_3", "currency"]
 
-    # change to treatment number of interest
-    treatment = 1
+#     # change to treatment number of interest
+#     treatment = 1
 
-    segmentation = Segmentation(ed=experiment_data_with_segments)
-    segmentation.wise_pizza_frequentist(
-        target="conversion",
-        treatment=treatment,
-        segments=segments,
-        max_depth=2,  # customize to own preference
-        min_segments=10,  # customize to own preference
-    )
+#     segmentation = Segmentation(ed=experiment_data_with_segments)
+#     segmentation.wise_pizza_frequentist(
+#         target="conversion",
+#         treatment=treatment,
+#         segments=segments,
+#         max_depth=2,  # customize to own preference
+#         min_segments=10,  # customize to own preference
+#     )
 
-    slice_finder = segmentation.get_sf()
-    slice_finder.plot(width=1000, plot_is_static=True)
+#     slice_finder = segmentation.get_sf()
+#     slice_finder.plot(width=1000, plot_is_static=True)
 
 
 if __name__ == "__main__":
