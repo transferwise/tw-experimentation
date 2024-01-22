@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tw-experimentation"
-version = "0.1.2"
+version = "0.1.2.2"
 description = "Wise AB platform"
 authors = ["Wise"]
 readme = "README.md"
@@ -8,6 +8,10 @@ readme = "README.md"
 
 [build-system]
 requires = ["setuptools", "wheel"]
+
+
+[tool.poetry.scripts]
+run_tw_experimentation_streamlit = "tw_experimentation.streamlit.run_streamlit_app_entry_point:main"
 
 
 [tool.pytest.ini_options]
