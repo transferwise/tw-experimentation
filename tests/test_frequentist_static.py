@@ -161,11 +161,5 @@ def test_frequentist_wise_pizza_segmentation_in_notebook(experiment_data_with_se
     slice_finder.plot(width=1000, plot_is_static=True)
 
 
-def test_frequentist_custom_segmentation_in_notebook(experiment_data_with_segments):
-    # segments = ["segment_1", "segment_2", "segment_3", "currency"]
-
-    _ = SegmentationInterface(experiment_data_with_segments)
-
-
 if __name__ == "__main__":
     pytest.main([__file__])
