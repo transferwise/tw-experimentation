@@ -1,7 +1,5 @@
 import pytest
 
-from pandas import testing as tm
-
 from tw_experimentation.utils import ExperimentDataset
 from tw_experimentation.data_generation import RevenueConversion
 
@@ -9,6 +7,8 @@ from tw_experimentation.statistical_tests import (
     FrequentistTest,
     compute_frequentist_results,
 )
+
+from pandas import testing as tm
 
 
 @pytest.fixture

@@ -6,8 +6,9 @@ import tw_experimentation.streamlit
 
 
 def main() -> None:
-    streamlit_script_path = os.path.join(os.path.dirname(tw_experimentation.streamlit.__file__), "Main.py")
-    sys.argv = ["streamlit", "run", streamlit_script_path ]
+    this_file = os.path.dirname(tw_experimentation.streamlit.__file__)
+    streamlit_script_path = os.path.join(this_file, "Main.py")
+    sys.argv = ["streamlit", "run", streamlit_script_path]
     runpy.run_module("streamlit", run_name="__main__")
 
 

@@ -44,24 +44,27 @@ def test_bayestest_end(experiment_data_two_treatment):
     br.fig_posterior_difference_by_target(outcome_metric)
 
     # greater than zero probability
-    description = f"The probability that the average treatment effect is greater than 0 for {outcome_metric} is\n"
+    description = f"The probability that the average treatment effect is greater than 0 for {outcome_metric} is\n"  # noqa: E501
     for variant in range(1, ed.n_variants):
-        description += f" {br.prob_greater_than_zero(outcome_metric)[variant]*100}% for variant {variant}"
+        description += f" {br.prob_greater_than_zero(outcome_metric)[variant]*100}% for variant {variant}"  # noqa: E501
         description += "." if variant == ed.n_variants - 1 else ",\n"
     print(description)
 
     # greater than threshold probability
     threshold = 100
-    description = f"The probability that the average treatment effect is greater than {threshold} for {outcome_metric} is\n"
+    description = "The probability that the average treatment effect is greater than "
+    f"{threshold} for {outcome_metric} is\n"
     for variant in range(1, ed.n_variants):
-        description += f" {br.prob_greater_than_z(threshold, outcome_metric)[variant]*100}% for variant {variant}"
+        description += f" {br.prob_greater_than_z(threshold, outcome_metric)[variant]*100}% for variant {variant}"  # noqa: E501
         description += "." if variant == ed.n_variants - 1 else ",\n"
     print(description)
 
     # rope probability
     probs, rope_lower, rope_upper = br.rope(outcome_metric)
 
-    description = f"The probability that the average treatment effect is outside the region of practical equivalence ({rope_lower},{rope_upper}) for {outcome_metric} is\n"
+    description = "The probability that the average treatment effect is outside"
+    " the region of practical equivalence"
+    f" ({rope_lower},{rope_upper}) for {outcome_metric} is\n"
     for variant in range(1, ed.n_variants):
         description += f" {probs[variant]*100:.2f}% for variant {variant}"
         description += "." if variant == ed.n_variants - 1 else ",\n"

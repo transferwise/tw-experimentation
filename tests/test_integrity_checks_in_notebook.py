@@ -1,6 +1,5 @@
 import pytest
 
-import pandas as pd
 import numpy as np
 from tw_experimentation.utils import ExperimentDataset
 from tw_experimentation.data_generation import RevenueConversion
@@ -61,13 +60,13 @@ def test_monitoring_segments_in_notebook(experiment_data_with_segments):
     # choose segments to monitor
     segments = ["currency", "segment_1", "segment_2"]
     segment_monitor = SegmentMonitoring(ed, segments)
-    segment_monitor_results = segment_monitor.create_tables_and_plots()
+    _ = segment_monitor.create_tables_and_plots()
 
 
 def test_monitoring_in_notebook(experiment_data_with_segments):
     ed = experiment_data_with_segments
     monitor = Monitoring(ed)
-    monitor_results = monitor.create_tables_and_plots()
+    _ = monitor.create_tables_and_plots()
 
 
 def test_normality_checks(experiment_data_with_segments):
@@ -84,8 +83,8 @@ def test_sequential_test_in_notebook(experiment_data_with_segments):
     ed = experiment_data_with_segments
     if ed.is_dynamic_observation:
         sequential_test = SequentialTest(ed)
-        sequential_test_results = sequential_test.sequential_test_results()
-        fig = sequential_test.fig_sequential_test()
+        sequential_test.sequential_test_results()
+        _ = sequential_test.fig_sequential_test()
 
 
 if __name__ == "__main__":

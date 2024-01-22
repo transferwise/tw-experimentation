@@ -11,9 +11,6 @@ from jax import random
 from numpyro.infer import MCMC, NUTS
 
 
-from tw_experimentation.statistical_tests import *
-
-
 class TestNumpyroSampler(object):
     @pytest.fixture
     def data_input(self):

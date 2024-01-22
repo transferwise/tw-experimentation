@@ -1,35 +1,25 @@
-import numpy as np
-
-import jax
 from jax import lax
-from jax.nn import softmax, softplus
 import jax.numpy as jnp
 import jax.random as random
-from jax.scipy.special import expit, gammaincc, gammaln, logsumexp, xlog1py, xlogy
 
-from numpyro.distributions import constraints, transforms
+from numpyro.distributions import constraints
 from numpyro.distributions.distribution import Distribution
 from numpyro.distributions.util import (
-    binary_cross_entropy_with_logits,
-    binomial,
-    categorical,
-    clamp_probs,
     is_prng_key,
     lazy_property,
-    multinomial,
     promote_shapes,
     validate_sample,
 )
 from numpyro.distributions import LogNormal
-from numpyro.util import not_jax_tracer
 
 
 class ZeroInflatedProbsPatch(Distribution):
     """ZeroInflatedProbs distribution from Numpyro.
 
-    https://num.pyro.ai/en/stable/_modules/numpyro/distributions/discrete.html#ZeroInflatedDistribution
+    https://num.pyro.ai/en/stable/_modules/numpyro/distributions/discrete.html#ZeroInflatedDistribution # noqa: E501
 
-    Remove assertion check for base_dist.support.is_discrete to allow for continuous base_dist
+    Remove assertion check for base_dist.support.is_discrete to allow for
+        continuous base_dist
     i.e. ZeroInflatedLogNormal
     """
 
@@ -40,11 +30,8 @@ class ZeroInflatedProbsPatch(Distribution):
         (self.gate,) = promote_shapes(gate, shape=batch_shape)
         # assert base_dist.support.is_discrete
         if base_dist.event_shape:
-            raise ValueError(
-                "ZeroInflatedProbs expected empty base_dist.event_shape but got {}".format(
-                    base_dist.event_shape
-                )
-            )
+            warning = "ZeroInflatedProbs expected empty base_dist.event_shape but got"
+            raise ValueError(f"{warning} {base_dist.event_shape}")
         # XXX: we might need to promote parameters of base_dist but let's keep
         # this simplified for now
         self.base_dist = base_dist.expand(batch_shape)

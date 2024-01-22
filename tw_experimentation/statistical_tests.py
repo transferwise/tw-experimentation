@@ -12,10 +12,20 @@ from typing import Optional, Dict, Union, List
 
 import numpy as np
 import pandas as pd
-import scipy.stats as sps
+from statsmodels.stats.weightstats import ttest_ind
+from statsmodels.stats.proportion import (
+    confint_proportions_2indep,
+)
+from statsmodels.stats.proportion import (
+    test_proportions_2indep as ztest_proportions_2indep,
+)
+from scipy import stats as sps
+
+import copy
 
 
-# TODO: Write factory so that the frequentist test result can be calculated for each segment?
+# TODO: Write factory so that the frequentist test result can be
+#   calculated for each segment?
 @dataclass
 class FrequentistPerTargetResults:
     variant_means: Dict[int, float]
@@ -295,18 +305,24 @@ class FrequentistTestResults:
         type_i_error: float = 0.05,
         multitest_correction: Optional[str] = None,
     ):
-        """Compute statistical tests and confidence intervals for each target variable.
+        """Compute statistical tests and confidence intervals for
+            each target variable.
 
         Args:
-            direction (str, optional): The direction of the test. Defaults to "two-sided".
+            direction (str, optional): The direction of the test.
+                Defaults to "two-sided".
                 Options are ['two-sided', 'greater', 'less'].
-            pooled_variance (bool, optional): Whether to use pooled variance for hypothesis test. Defaults to True.
-            type_i_error (float, optional): The significance level(s) for confidence intervals. Defaults to 0.05.
-            multitest_correction (str, optional): The method for multiple hypothesis correction. Defaults to None.
+            pooled_variance (bool, optional): Whether to use pooled
+                variance for hypothesis test. Defaults to True.
+            type_i_error (float, optional): The significance level(s)
+                for confidence intervals. Defaults to 0.05.
+            multitest_correction (str, optional): The method for multiple
+                hypothesis correction. Defaults to None.
                 Can be one of ['bonferroni', None].
 
         Returns:
-            dict: A dictionary containing the computed statistical tests, p-values, confidence intervals, and treatment effects for each target variable.
+            dict: A dictionary containing the computed statistical tests, p-values,
+                confidence intervals, and treatment effects for each target variable.
         """
         # TODO: initiate multiple hypothesis correction here
         if multitest_correction is None:
@@ -532,13 +548,16 @@ class BonferroniCorrection(MulitpleHypothesisCorrection):
         """Corrects the alpha values for multiple hypothesis testing.
 
         Args:
-            p_values (list, optional): List of p-values for each hypothesis. Defaults to None.
+            p_values (list, optional): List of p-values for each hypothesis.
+                Defaults to None.
 
         Raises:
-            NotImplementedError: If correction for targets and segments is not implemented yet.
+            NotImplementedError: If correction for targets and segments
+            is not implemented yet.
 
         Returns:
-            Union[Dict, float]: corrected alpha values for each hypothesis or a single value for all
+            Union[Dict, float]: corrected alpha values for each hypothesis
+                or a single value for all
         """
         if self.correct_n_targets or self.correct_n_segments:
             raise NotImplementedError(
@@ -623,19 +642,6 @@ class BaseTest(ABC):
     def outcomes_of_variant(self, variant, target):
         # TODO: also define this function in ExperimentDataset class
         return self.ed.data.loc[(self.ed.data[self.ed.variant] == variant), target]
-
-
-# TODO: Will move to frequentist.py
-from statsmodels.stats.weightstats import ttest_ind
-from statsmodels.stats.proportion import (
-    confint_proportions_2indep,
-)
-from statsmodels.stats.proportion import (
-    test_proportions_2indep as ztest_proportions_2indep,
-)
-from scipy import stats as sps
-
-import copy
 
 
 def t_test(sample_1, sample_2, alpha, alternative="two-sided"):
@@ -749,7 +755,8 @@ class FrequentistTest(BaseTest):
                 data_control, data_treat, alpha, alternative="two-sided"
             )
         elif test_type == "proportion_test":
-            # There seems to be a statsmodels bug forcing us to swap control and treat data here
+            # There seems to be a statsmodels bug forcing us to swap control
+            # and treat data here
             p_value, conf_interval, stat = proportion_test(
                 data_treat, data_control, alpha, alternative="two-sided"
             )
@@ -774,7 +781,8 @@ class FrequentistTest(BaseTest):
         pass
 
     def _compute_confidence_intervals(self, method: str = "analytical_or_bootstrap"):
-        # method must be in ['analytical_or_bootstrap', 'no_bootstrap', 'always_bootstrap']
+        # method must be in
+        # ['analytical_or_bootstrap', 'no_bootstrap', 'always_bootstrap']
         pass
 
     def _bootstrap_confidence_intervals(self):
@@ -783,7 +791,8 @@ class FrequentistTest(BaseTest):
 
     def _alpha_correction(self, correction_level="per_treatment"):
         # correction_level in ['per_treatment', 'global']
-        # If global, correction parameter is n_treatments*n_targets. Else it is n_targets
+        # If global, correction parameter is n_treatments*n_targets.
+        # Else it is n_targets
         if self.multitest_correction == "bonferroni":
             n_hypotheses = (self.ed.n_variants - 1) * (
                 correction_level == "per_treatment"
@@ -884,13 +893,16 @@ def cuped(ed: ExperimentDataset, has_correction: bool, alpha: float):
     wrapper to variance reduction methods.
 
     Args:
-        ExperimentDataset (ExperimentDataset): An ExperimentDataset object containing the data to be analyzed.
-        has_correction (bool): A boolean indicating whether to apply a multitest correction.
+        ExperimentDataset (ExperimentDataset): An ExperimentDataset object
+            containing the data to be analyzed.
+        has_correction (bool): A boolean indicating whether to apply a
+            multitest correction.
             If True, the Bonferroni correction is applied.
         alpha (float): The significance level for hypothesis testing.
 
     Returns:
-        final_df (DataFrame): A pandas DataFrame containing the estimated treatment effects, confidence intervals,
+        final_df (DataFrame): A pandas DataFrame containing the estimated
+            treatment effects, confidence intervals,
             p-values, and significance levels for each target and treatment combination.
     """
     # check if multiple covariates are to be used
@@ -972,14 +984,16 @@ def cuped(ed: ExperimentDataset, has_correction: bool, alpha: float):
 
 
 def run_cuped(ed: ExperimentDataset):
-    """Applies the CUPED method to estimate treatment effects in experiment. Serves as a
-    wrapper to variance reduction methods.
+    """Applies the CUPED method to estimate treatment effects in experiment.
+    Serves as a wrapper to variance reduction methods.
 
     Args:
-        ExperimentDataset (ExperimentDataset): An ExperimentDataset object containing the data to be analyzed.
+        ExperimentDataset (ExperimentDataset): An ExperimentDataset object
+            containing the data to be analyzed.
 
     Returns:
-        output (CUPEDOutput): A results object with all fitted estimators that can then be assembled into a results table.
+        output (CUPEDOutput): A results object with all fitted estimators
+        that can then be assembled into a results table.
     """
     # check if multiple covariates are to be used
     multivariate = (
@@ -1022,14 +1036,15 @@ class CUPEDoutput:
     n_variants: int
 
     def results_table(self, alpha: float = 0.05, has_correction: bool = False):
-        # multitest correction NOTE: copied straight from FrequentistTest._alpha_correction
+        # multitest correction
+        # NOTE: copied straight from FrequentistTest._alpha_correction
         # TODO: remove duplication, integrate with MultipleHypothesisCorrection
         multitest_correction = (
             "bonferroni" if self.n_variants > 2 and has_correction == "Yes" else None
         )
         if multitest_correction is not None:
             if multitest_correction == "bonferroni":
-                correction_level = "per_treatment"  # NOTE: hardcoded for the time being
+                correction_level = "per_treatment"  # NOTE: hardcoded for now
                 n_hypotheses = (self.n_variants - 1) * (
                     correction_level == "per_treatment"
                 ) + len(self.targets) * (self.n_variants - 1) * (
@@ -1072,47 +1087,3 @@ class CUPEDoutput:
         final_df = pd.concat(result_dfs)
         final_df = final_df.set_index(["Variant", "Outcome"])
         return final_df
-
-
-# for debugging frequentist test
-if __name__ == "__main__":
-    import pandas as pd
-    import numpy as np
-    from tw_experimentation.utils import *
-    from tw_experimentation.data_generation import *
-
-    rc = RevenueConversion()
-    df = rc.generate_data(
-        baseline_conversion=0.4,
-        treatment_effect_conversion=0.3,
-        baseline_mean_revenue=6,
-        sigma_revenue=1,
-        treatment_effect_revenue=0.5,
-    )
-
-    df_abn = rc.generate_data_abn_test(
-        n_treatments=2,
-        baseline_conversion=0.4,
-        treatment_effect_conversion=0.04,
-        baseline_mean_revenue=6,
-        sigma_revenue=1,
-        treatment_effect_revenue=0.5,
-    )
-
-    targets = ["conversion", "revenue"]
-
-    metrics = ["binary", "continuous"]
-
-    ed = ExperimentDataset(
-        data=df_abn,
-        variant="T",
-        targets=targets,
-        date="trigger_dates",
-        metric_types=dict(zip(targets, metrics)),
-        n_variants=2,
-    )
-
-    ed.preprocess_dataset()
-    ft = FrequentistTest(ed=ed)
-    ft.compute()
-    ft.get_results_table()

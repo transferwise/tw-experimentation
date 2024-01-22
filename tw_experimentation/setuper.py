@@ -3,14 +3,10 @@ Tool to set up experiments: alpha, beta, MDE, power
 Code contains Setuper class with methods.
 """
 
-import pandas as pd
 import numpy as np
 
-from typing import List, Union
 from dataclasses import dataclass
 
-import statsmodels.api as sm
-import statsmodels.formula.api as sm
 import statsmodels.stats as stats
 from statsmodels.stats import power as pwr
 
@@ -97,8 +93,10 @@ class Setuper:
         Args:
             alpha (float, optional): Type-I error. Defaults to .05.
             beta (float, optional): Type-II error. Defaults to .2.
-            treatment_share (float, optional): Share of treatment group in the sample. Defaults to .5.
-            effect_size (float, optional): Standardized effect size: Cohen d. Defaults to .02.
+            treatment_share (float, optional): Share of treatment group in the sample.
+                Defaults to .5.
+            effect_size (float, optional): Standardized effect size: Cohen d.
+                Defaults to .02.
             alternative (str, optional): 'two_sided', 'larger', 'smaller'
             for alternative test designs. Defaults to 'two-sided'.
         """
@@ -129,11 +127,14 @@ class Setuper:
             mean (float): expected baseline mean
             alpha (float, optional): type-I error. Defaults to .05.
             beta (float, optional): type-II error. Defaults to .2.
-            treatment_share (float, optional): treatment share in population. Defaults to .5.
-            relation (str, optional): 'two-sided', 'larger' or 'smaller. Defaults to 'absolute'.
+            treatment_share (float, optional): treatment share in population.
+                Defaults to .5.
+            relation (str, optional): 'two-sided', 'larger' or 'smaller.
+                Defaults to 'absolute'.
 
         Returns:
-            Setuper class instance: Setuper class with uplift converted to effect size
+            Setuper class instance: Setuper class with uplift
+                converted to effect size
         """
         return cls(
             alpha,
@@ -192,13 +193,15 @@ class Setuper:
     def sample_size_proportion_test(
         self, uplift, baseline_conversion=0.5, relation="absolute"
     ):
-        """Sample sie for proportion test, requires uplift and automatically calculates
-        standard deviation.
+        """Sample sie for proportion test, requires uplift and
+            automatically calculate standard deviation.
 
         Args:
             uplift (float): uplift to detect
-            baseline_conversion (float, optional): baseline conversion. Defaults to .5.
-            relation (str, optional): 'two-sided', 'larger' or 'smaller'. Defaults to 'absolute'.
+            baseline_conversion (float, optional): baseline conversion.
+                Defaults to .5.
+            relation (str, optional): 'two-sided', 'larger' or 'smaller'.
+                Defaults to 'absolute'.
 
         Returns:
             float: total sample size
@@ -314,8 +317,10 @@ class Setuper:
         Args:
             uplift (float): uplift to detect
             nobs (int): number of observations
-            baseline_conversion (float, optional): baseline conversion rate. Defaults to .5.
-            relation (str, optional): 'two-sided', 'larger' or 'smaller'. Defaults to 'absolute'.
+            baseline_conversion (float, optional): baseline conversion rate.
+                Defaults to .5.
+            relation (str, optional): 'two-sided', 'larger' or 'smaller'.
+                Defaults to 'absolute'.
 
         Returns:
             float: power
