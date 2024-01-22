@@ -6,9 +6,10 @@ from tw_experimentation.utils import ExperimentDataset
 from tw_experimentation.data_generation import RevenueConversion
 
 from tw_experimentation.statistical_tests import FrequentistTest, BaseTest
+from tw_experimentation.segmentation_frequentist import Segmentation
+
 from tw_experimentation.widgetizer import (
     FrequentistEvaluation,
-    Segmentation,
 )
 
 from tw_experimentation.statistical_tests import cuped
