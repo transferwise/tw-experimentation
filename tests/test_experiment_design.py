@@ -23,10 +23,12 @@ def experiment_data():
 
 
 def test_check_preprocessor(experiment_data):
-    """checks if dataset can be preprocessed (dummy encoding of vars etc...)
+    """checks if dataset can be preprocessed
+        (dummy encoding of vars etc...)
 
     Args:
-        df (pd.DataFrame): dataset for experiments, with cols for treatment, targets and covariates
+        df (pd.DataFrame): dataset for experiments, with cols
+            for treatment, targets and covariates
     """
     ed = experiment_data
     ed.preprocess_pre_experiment_dataset()
@@ -58,7 +60,7 @@ def test_auto_sample_size_filler(experiment_data):
                 relation="relative",
                 treatment_share=0.5,
             )
-            sample_size = setup.sample_size_two_sample_proportion_z_test()
+            _ = setup.sample_size_two_sample_proportion_z_test()
         elif exp_design_metric_type == "continuous":
             setup = Setuper.from_uplift(
                 alpha=0.1,
@@ -69,7 +71,7 @@ def test_auto_sample_size_filler(experiment_data):
                 relation="relative",
                 treatment_share=0.4,
             )
-            sample_size = setup.sample_size_t_test()
+            setup.sample_size_t_test()
         else:
             raise ValueError("metric type not supported")
 

@@ -149,7 +149,7 @@ def test_frequentist_wise_pizza_segmentation_in_notebook(experiment_data_with_se
     treatment = 1
 
     segmentation = Segmentation(ed=experiment_data_with_segments)
-    wise_pizza_segmentation = segmentation.wise_pizza_frequentist(
+    segmentation.wise_pizza_frequentist(
         target="conversion",
         treatment=treatment,
         segments=segments,
@@ -162,7 +162,7 @@ def test_frequentist_wise_pizza_segmentation_in_notebook(experiment_data_with_se
 
 
 def test_frequentist_custom_segmentation_in_notebook(experiment_data_with_segments):
-    segments = ["segment_1", "segment_2", "segment_3", "currency"]
+    # segments = ["segment_1", "segment_2", "segment_3", "currency"]
 
     _ = SegmentationInterface(experiment_data_with_segments)
 

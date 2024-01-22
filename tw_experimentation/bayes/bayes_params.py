@@ -1,4 +1,3 @@
-import numpyro.distributions as dist
 from numpyro.distributions import (
     ZeroInflatedPoisson,
     BernoulliProbs,
@@ -6,15 +5,9 @@ from numpyro.distributions import (
     Gamma,
     Uniform,
     Beta,
-    constraints,
     Normal,
-    Exponential,
-    Distribution,
 )
 from tw_experimentation.constants import MetricType
-
-from tw_experimentation.bayes.numpyro_monkeypatch import ZeroInflatedLogNormal
-from abc import ABCMeta, abstractmethod
 
 
 # AVAILABLE_LIKELIHOOD_MODELS = {

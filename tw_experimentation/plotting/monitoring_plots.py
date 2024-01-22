@@ -30,7 +30,8 @@ def plotly_reduce_n_points_per_trace(
 
     Args:
         fig (plotly.graph_objs.Figure): The Plotly figure to be modified.
-        max_n_points (int, optional): The maximum number of data points to keep in the figure. Defaults to 5000.
+        max_n_points (int, optional): The maximum number of data points to keep
+            in the figure. Defaults to 5000.
 
     Returns:
         plotly.graph_objs.Figure: The modified Plotly figure with reduced data points.
@@ -62,15 +63,18 @@ def plotly_reduce_n_points_per_trace(
 
 
 def plotly_light_memory(max_n_points=5000, min_n_points_per_trace=200):
-    """Decorator that reduces the number of points in a Plotly figure to optimize memory
-    usage.
+    """Decorator that reduces the number of points in a Plotly
+        figure to optimize memory usage.
 
     Args:
-        max_n_points (int, optional): The maximum number of points allowed in the figure. Defaults to 5000.
-        min_n_points_per_trace (int, optional): The minimum number of points allowed per trace in the figure. Defaults to 200.
+        max_n_points (int, optional): The maximum number of points allowed
+            in the figure. Defaults to 5000.
+        min_n_points_per_trace (int, optional): The minimum number of points
+            allowed per trace in the figure. Defaults to 200.
 
     Returns:
-        function: The decorated function that returns a Plotly figure with reduced number of points per trace.
+        function: The decorated function that returns a Plotly figure with reduced
+            number of points per trace.
     """
 
     def decorator(func):
@@ -139,7 +143,8 @@ def plot_sample_size_pie(ed: ExperimentDataset):
     """Plots a pie chart showing the sample size per variant in an ExperimentDataset.
 
     Args:
-        ed (ExperimentDataset): An ExperimentDataset object containing the data to be plotted.
+        ed (ExperimentDataset): An ExperimentDataset object containing the data
+            to be plotted.
 
     Returns:
         fig: A plotly figure object representing the pie chart.
@@ -169,7 +174,8 @@ def plot_dynamic_sample_size(df_dynamic_sample: pd.DataFrame, ed: ExperimentData
 
     Args:
         df_dynamic_sample (pd.DataFrame): A DataFrame containing the sample size data.
-        ed (ExperimentDataset): An ExperimentDataset object containing information about the experiment.
+        ed (ExperimentDataset): An ExperimentDataset object containing information
+            about the experiment.
 
     Returns:
         A plotly.graph_objs._figure.Figure Plot with sample size evolution.
@@ -255,8 +261,10 @@ def plot_qq_variants(
     """Plots a Q-Q plot for a given target between different variants.
 
     Args:
-        qq_variants (Dict[str, np.ndarray]): A dictionary containing the quantiles  for each variant.
-        ed (ExperimentDataset): An ExperimentDataset object containing the data for the experiment.
+        qq_variants (Dict[str, np.ndarray]): A dictionary containing
+            the quantiles  for each variant.
+        ed (ExperimentDataset): An ExperimentDataset object
+            containing the data for the experiment.
         target (str): The target variable to plot.
 
     Returns:
@@ -289,8 +297,8 @@ def plot_qq_variants(
 
     fig.update_layout(
         title=f"Quantile-quantile plot for {target} between variants",
-        xaxis_title=f"Control",
-        yaxis_title=f"Treatment",
+        xaxis_title="Control",
+        yaxis_title="Treatment",
     )
     return fig
 
@@ -436,13 +444,16 @@ def plot_qq_normal(
     target: str,
     standardized_residuals: Dict[str, Dict[int, np.ndarray]],
 ) -> go.Figure:
-    """Plots a quantile-quantile plot for a given target variable and its standardized
-    residuals for each variant in the experiment.
+    """Plots a quantile-quantile plot for a given target variable and its
+        standardized residuals for each variant in the experiment.
 
     Args:
-        ed (ExperimentDataset): The experiment dataset containing the data for each variant.
+        ed (ExperimentDataset): The experiment dataset containing the data for
+        each variant.
         target (str): The name of the target variable to plot.
-        standardized_residuals (Dict[str, Dict[int, np.ndarray]]): A dictionary containing the standardized residuals for each variant and target variable.
+        standardized_residuals (Dict[str, Dict[int, np.ndarray]]): A dictionary
+            containing the standardized residuals for each variant
+            and target variable.
 
     Returns:
         go.Figure: A Plotly figure object containing the quantile-quantile plot.

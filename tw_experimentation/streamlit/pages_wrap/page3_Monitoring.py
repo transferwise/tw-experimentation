@@ -146,7 +146,7 @@ def page_3_monitoring():
                 """
                 When using frequentist tests, we assume that the data is (approximately) normally distributed.
                 For continuous and discrete metrics, we can test this assumption using the Q-Q plot and the Shapiro-Wilk test.
-                For binary metrics, we do not need to test for normality. 
+                For binary metrics, we do not need to test for normality.
                 """
             )
             st.markdown(
@@ -178,7 +178,7 @@ def page_3_monitoring():
                     .set_table_attributes("style='display:inline'")
                     .applymap(
                         lambda v: "color:green;" if v > ALPHA_SHAPIRO else "color:red;",
-                        subset=[f"p-value"],
+                        subset=["p-value"],
                     )
                 )
 
@@ -191,7 +191,7 @@ def page_3_monitoring():
 
             Instead of static tests monitoring, you can also run a sequential test which potentially allows you to stop the test early (if the p-value in the following plot is below a predefined threshold such as alpha=.05).
 
-            Below you can see 
+            Below you can see
             - left column: average of each outcome over time (for both treatments and control)
             - center column: treatment effect with confidence interval over time for each treatment group
             - right column: dynamic p-value based on a sequential hypothesis test for each treatment

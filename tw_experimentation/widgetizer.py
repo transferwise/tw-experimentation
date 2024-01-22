@@ -227,12 +227,15 @@ class SampleSizeInterface:
                 x_sample_size = np.linspace(
                     200 if max_sample_size > 500 else 20, max_sample_size, num=100
                 )
-                uplift_map = lambda x: effect_size_to_uplift(
-                    setup.effect_size_two_sample_z_test(x),
-                    baseline_conversion,
-                    sd,
-                    relation=effect_type,
-                )
+
+                def uplift_map(x):
+                    effect_size_to_uplift(
+                        setup.effect_size_two_sample_z_test(x),
+                        baseline_conversion,
+                        sd,
+                        relation=effect_type,
+                    )
+
                 uplift = np.array(list(map(uplift_map, x_sample_size)))
 
                 fig = go.FigureWidget(data=go.Scatter(x=x_sample_size, y=uplift))
@@ -260,12 +263,15 @@ class SampleSizeInterface:
                 x_sample_size = np.linspace(
                     200 if max_sample_size > 500 else 20, max_sample_size, num=100
                 )
-                uplift_map = lambda x: effect_size_to_uplift(
-                    setup.effect_size_t_test(x),
-                    mean,
-                    sd,
-                    relation=effect_type,
-                )
+
+                def uplift_map(x):
+                    effect_size_to_uplift(
+                        setup.effect_size_t_test(x),
+                        mean,
+                        sd,
+                        relation=effect_type,
+                    )
+
                 uplift = np.array(list(map(uplift_map, x_sample_size)))
                 fig = go.FigureWidget(data=go.Scatter(x=x_sample_size, y=uplift))
                 fig.add_vline(

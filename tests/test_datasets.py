@@ -43,7 +43,8 @@ def test_check_preprocessor(experiment_data):
     """checks if dataset can be preprocessed (dummy encoding of vars etc...)
 
     Args:
-        df (pd.DataFrame): dataset for experiments, with cols for treatment, targets and covariates
+        df (pd.DataFrame): dataset for experiments, with cols for treatment,
+            targets and covariates
     """
     ed = experiment_data
     ed.preprocess_dataset()

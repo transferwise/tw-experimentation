@@ -1,5 +1,3 @@
-from tw_experimentation.utils import ExperimentDataset
-from tw_experimentation.data_generation import *
 from tw_experimentation.constants import MetricType
 
 import pandas as pd
@@ -12,10 +10,7 @@ import numpyro
 import numpyro.distributions as dist
 
 
-from jax import random
 from jax import numpy as jnp
-from numpyro.infer import MCMC, NUTS
-from numpyro.infer.util import Predictive
 
 
 from tw_experimentation.bayes.bayes_params import (
@@ -173,7 +168,7 @@ class BayesModel:
                     self.posterior_ate(
                         models,
                         k,
-                        auxiliary_zero_inflation=self.likelihood_model.auxiliary_zero_inflation,
+                        auxiliary_zero_inflation=self.likelihood_model.auxiliary_zero_inflation,  # noqa: E501
                         aux_dist=aux_dist,
                     ),
                 )
@@ -183,7 +178,7 @@ class BayesModel:
                 self.posterior_means(
                     models,
                     k,
-                    auxiliary_zero_inflation=self.likelihood_model.auxiliary_zero_inflation,
+                    auxiliary_zero_inflation=self.likelihood_model.auxiliary_zero_inflation,  # noqa: E501
                     aux_dist=aux_dist,
                 ),
             )
@@ -235,100 +230,9 @@ class BayesModel:
             return numpyro_model[variant]["rate"] * numpyro_model[variant]["gate"]
 
     def _model_is_well_defined(self):
-        # check whether parameters needed for likelihood model all appear in self.prior_model
+        # check whether parameters needed for likelihood model all
+        # appear in self.prior_model
         return True
 
     def get_likelihood_variables(self):
         return list(self.prior_model.keys())
-
-
-# for debugging
-if __name__ == "__main__":
-    from statistical_tests import *
-
-    rc = RevenueConversion()
-    df = rc.generate_data()
-
-    targets = ["conversion", "revenue"]
-    metrics = ["binary", "continuous"]
-
-    ed = ExperimentDataset(
-        data=df,
-        variant="T",
-        targets=targets,
-        date="trigger_dates",
-        metric_types=dict(zip(targets, metrics)),
-    )
-
-    ed.preprocess_dataset()
-
-    ### Test 1
-    bm = BayesModel(
-        metric_type="binary", observations=ed.data.groupby("T")["conversion"]
-    )
-    nuts = NUTS(bm.build_model, adapt_step_size=True)
-    mcmc = MCMC(nuts, num_samples=1000, num_warmup=500)
-    rng_key = random.PRNGKey(0)
-
-    bm.set_prior_model_param("probs", {"args": (5, 4), "kwargs": {}})
-
-    mcmc.run(
-        rng_key,
-    )
-    mcmc.print_summary(exclude_deterministic=False)
-
-    sam = mcmc.get_samples()
-    pred = Predictive(bm.build_model, num_samples=1000)
-    y_pred = pred(rng_key)["likelihood_model_0"]
-    pred_post = Predictive(
-        bm.build_model, posterior_samples=sam, num_samples=1000, batch_ndims=2
-    )
-    y_post_pred_0 = pred_post(rng_key)["likelihood_model_0"]
-    y_post_pred_1 = pred_post(rng_key)["likelihood_model_1"]
-    y_post_all = pred_post(rng_key)
-    n_points = min(y_post_pred_0.shape[1], y_post_pred_0.shape[1])
-
-    diff = y_post_pred_1[:, :n_points] - y_post_pred_0[:, :n_points]
-
-    diff_2 = jnp.mean(y_post_pred_1, axis=1) - jnp.mean(y_post_pred_1, axis=1)
-    print(diff)
-    print(diff_2)
-    ### Test 2
-    bm = BayesModel(
-        metric_type="binary", observations=ed.data.groupby("T")["conversion"]
-    )
-    nuts = NUTS(bm.build_model, adapt_step_size=True)
-    mcmc = MCMC(nuts, num_samples=1000, num_warmup=500)
-    rng_key = random.PRNGKey(0)
-
-    bm.set_prior_model(
-        "probs", dist.Uniform, {"args": (), "kwargs": {"low": 0, "high": 1}}
-    )
-
-    mcmc.run(
-        rng_key,
-    )
-    mcmc.print_summary(exclude_deterministic=False)
-
-    ### Test 3
-    bm = BayesModel(
-        metric_type="continuous", observations=ed.data.groupby("T")["revenue"]
-    )
-    nuts = NUTS(bm.build_model, adapt_step_size=True)
-    mcmc = MCMC(nuts, num_samples=1000, num_warmup=500)
-    rng_key = random.PRNGKey(0)
-
-    bm.set_model(
-        dist.Normal,
-        ["loc", "scale"],
-        [dist.LogNormal, dist.Gamma],
-        [
-            {"args": {}, "kwargs": {"loc": 0, "scale": 1}},
-            {"args": (1,), "kwargs": {"rate": 0.5}},
-        ],
-    )
-
-    mcmc.run(
-        rng_key,
-    )
-    mcmc.print_summary(exclude_deterministic=False)

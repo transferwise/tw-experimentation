@@ -10,8 +10,6 @@ from tw_experimentation.streamlit.streamlit_utils import (
 )
 
 import numpy as np
-from wise_pizza.plotting import plot_segments
-
 from tw_experimentation.utils import highlight
 
 
@@ -69,7 +67,8 @@ def page_4_experiment_evaluation():
         alpha = st.session_state.evaluation_alpha
         st.markdown(
             """
-            In case you have multiple treatment variants, you will have the option to perform a multi-test correction on the p-values
+            In case you have multiple treatment variants, you will have the option to perform a
+            multi-test correction on the p-values
             (current implementation: Bonferroni method. This is subject to change in the future).
             """
         )
@@ -125,8 +124,11 @@ def page_4_experiment_evaluation():
                 on_change=swap_checkbox_state,
                 args=("evaluate_CUPED",),
                 help="""
-            CUPED is a variance reduction method leveraging pre-experiment data in order to increase the sensitivity of an A/B test.
-            The basic idea is to use pre-experiment data as a control variate in the test;  the pre-experiment data is used to transform the target variable so that its variability is lowered after which we apply the standard/vanilla T-test to the transformed target.
+            CUPED is a variance reduction method leveraging pre-experiment data in order to
+            increase the sensitivity of an A/B test.
+            The basic idea is to use pre-experiment data as a control variate in the test;  the pre-experiment data is used to
+            transform the target variable so that its variability is lowered
+            after which we apply the standard/vanilla T-test to the transformed target.
             """,
             )
             if st.session_state["evaluate_CUPED"]:
@@ -134,7 +136,9 @@ def page_4_experiment_evaluation():
                     """
                     The columns specified as pre-experiment metrics in Data Loading must be independent of the variant assignment.
                     The greater the correlation between the chosen columns and the outcome, the greater the CUPED's variance reduction and hence power/sensitivity improvement.
-                    **The simplest and best option is to use the pre-experiment outcome if such exists**. For example, if the outcome metric is volume of transactions, then the pre-experiment outcome could be the volume of transactions in the month prior to the experiment.
+                    **The simplest and best option is to use the pre-experiment outcome if such exists**.
+                    For example, if the outcome metric is volume of transactions, then the pre-experiment
+                    outcome could be the volume of transactions in the month prior to the experiment.
                     """
                 )
                 st.subheader("Test with power/sensitivity improvement")
@@ -160,20 +164,26 @@ def page_4_experiment_evaluation():
                 st.markdown(
                     """
                     #### How can I interpret the results?
-                    - The above presents the result of the T-test after the power/sensitivity method has been applied
-                    - The conclusions which can be drawn are the same as for the vanilla T-tests
+                    - The above presents the result of the T-test after
+                    the power/sensitivity method has been applied
+                    - The conclusions which can be drawn are the same
+                    as for the vanilla T-tests
 
                     #### What if the CUPED's effect significance is different from the Frequentist Evaluation's effect significance?
-                    - Generally, we can still consider the effect to be significant if CUPED is significant while Frequentist Evaluation is not.
-                    - However, if it's the other way and CUPED's effect is not significant while Frequentist Evaluation's is, we have a reason to believe that there is some issue with CUPED that requires further investigation.
+                    - Generally, we can still consider the effect to be significant if CUPED
+                    is significant while Frequentist Evaluation is not.
+                    - However, if it's the other way and CUPED's effect is not significant while Frequentist Evaluation's is,
+                    we have a reason to believe that there is some issue with CUPED that requires further investigation.
                     """
                 )
                 st.divider()
         st.subheader("Segmentation with Wise Pizza")
         st.markdown(
             """
-            - In this section you can find unusual segments in terms of the difference between the control and test groups
-            - Please provide segments which you want to analyse, metric to analyse and number of observations
+            - In this section you can find unusual segments in terms of the
+            difference between the control and test groups
+            - Please provide segments which you want to analyse, metric to
+            analyse and number of observations
             """
         )
 
@@ -183,16 +193,20 @@ def page_4_experiment_evaluation():
 
             - `segments`: List of discrete dimensions to find slices
             - `target`: Metric to analyse
-            - `treatment`: If you have different test groups, specify group here, for example treatment=1 means
-            we compare with first treatment group
+            - `treatment`: If you have different test groups, specify group here,
+            for example treatment=1 means we compare with first treatment group
             - `min_segments`: Minimum number of segments to find
-            - `max_depth`: Maximum number of dimension to constrain in segment definition
+            - `max_depth`: Maximum number of dimension to constrain in
+            segment definition
 
 
-            *Warning*: The p-values are currently not corrected for multiple comparisons.
-            However, Wise-Pizza identifies segments as interesting only if the treatment effect is sufficiently high
-            compared to the segment sample size so this selection is a first approximation of avoiding
-            p-value inflation in segmentation analysis.
+            *Warning*: The p-values are currently not corrected for
+            multiple comparisons.
+            However, Wise-Pizza identifies segments as interesting only
+            if the treatment effect is sufficiently high
+            compared to the segment sample size so this selection is a
+            first approximation
+            of avoiding p-value inflation in segmentation analysis.
             """
         )
 
@@ -238,11 +252,14 @@ def page_4_experiment_evaluation():
                     """
                     #### How can I interpret the results?
 
-                    - We are trying to find unusual segments in terms of the averages (***to highlight the segments contributing the most to the difference between test and control***)
-                    - Impact (Blue) is the model coefficient * size, if it is bigger than zero, than segment average is bigger than the global one (global difference in metric between test and control)
+                    - We are trying to find unusual segments in terms of the averages
+                    (***to highlight the segments contributing
+                    the most to the difference between test and control***)
+                    - Impact (Blue) is the model coefficient * size, if it is bigger
+                    than zero, than segment average is bigger than the global one
+                    (global difference in metric between test and control)
                     - Simple segment averages (Red) - average for specific segment
                     - Segment Sizes (Green) - number if observations in the segment
-
                     """
                 )
             else:
