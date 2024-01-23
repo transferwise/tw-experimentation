@@ -1,9 +1,8 @@
-# import sys, os, pathlib
+import sys
+import os
 
-# root_path = os.path.realpath("../..")
-# sys.path.insert(0, root_path)
-
-# sys.path.append(str(pathlib.Path().absolute()).split("/tw_experimentation")[0])
+root_path = os.path.realpath("../..")
+sys.path.insert(0, root_path)
 
 from tw_experimentation.utils import ExperimentDataset
 from tw_experimentation.statistical_tests import (
@@ -31,17 +30,6 @@ from tw_experimentation.checker import (
 )
 from tw_experimentation.bayes.bayes_test import BayesTest
 
-from abc import ABC, abstractmethod
-import streamlit as st
-
-import pandas as pd
-from scipy.stats import chi2_contingency
-from snowflake.sqlalchemy import URL
-from sqlalchemy import create_engine
-import json
-
-from typing import Optional, List, Union
-
 from tw_experimentation.constants import (
     COLORSCALES,
     ACCOUNT,
@@ -58,13 +46,29 @@ from tw_experimentation.constants import (
     RESULT_TABLE,
 )
 
+from abc import ABC, abstractmethod
+import streamlit as st
+
+import pandas as pd
+from scipy.stats import chi2_contingency
+from snowflake.sqlalchemy import URL
+from sqlalchemy import create_engine
+import json
+
+from typing import Optional, List, Union
+
+import streamlit as st
+
+import pandas as pd
+from scipy.stats import chi2_contingency
+from snowflake.sqlalchemy import URL
+from sqlalchemy import create_engine
+import json
+
+from typing import Optional, List, Union
+
 
 class SnowflakeConnection(ABC):
-    @property
-    @abstractmethod
-    def require_username(self):
-        pass
-
     @abstractmethod
     def connect(self, restart_engine=False, **kwargs):
         pass
@@ -93,10 +97,6 @@ class SnowflakeIndividualCredentials(SnowflakeConnection):
     def __init__(self, username: str, password: str):
         self.username = username
         self.password = password
-
-    @property
-    def require_username(self):
-        return True
 
     def connect(
         self,
