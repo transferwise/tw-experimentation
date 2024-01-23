@@ -4,19 +4,17 @@ Code contains Tester class with methods for specific tests. Support only pandas
 DataFrames now.
 """
 
-import pandas as pd
-import numpy as np
-from statsmodels import stats as sms
-from scipy import stats as scipystats
-
-from sklearn.utils import resample
-
 from typing import List, Union
 
+import numpy as np
+import pandas as pd
+from scipy import stats as scipystats
 from SequentialProbabilityRatioTTest import (
-    SequentialProbabilityRatioTTest,
     SequentialProbabilityRatioBinaryTest,
+    SequentialProbabilityRatioTTest,
 )
+from sklearn.utils import resample
+from statsmodels import stats as sms
 
 
 class BinaryTest:

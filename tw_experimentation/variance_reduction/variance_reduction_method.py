@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-import statsmodels.api as sm
+
 import pandas as pd
+import statsmodels.api as sm
 
 
 class VarianceReductionMethod(ABC):

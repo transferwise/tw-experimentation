@@ -3,14 +3,12 @@ Tool to set up experiments: alpha, beta, MDE, power
 Code contains Setuper class with methods.
 """
 
-import numpy as np
-
 from dataclasses import dataclass
 
+import numpy as np
+import plotly.express as px
 import statsmodels.stats as stats
 from statsmodels.stats import power as pwr
-
-import plotly.express as px
 
 from tw_experimentation.utils import ExperimentDataset
 

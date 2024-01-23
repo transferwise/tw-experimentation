@@ -1,27 +1,19 @@
-from tw_experimentation.utils import ExperimentDataset
-
+import copy
 from abc import ABC, abstractmethod
-
-from tw_experimentation.variance_reduction.cuped import (
-    CUPED,
-    MultivariateCUPED,
-)
-
 from dataclasses import dataclass
-from typing import Optional, Dict, Union, List
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 import pandas as pd
-from statsmodels.stats.weightstats import ttest_ind
-from statsmodels.stats.proportion import (
-    confint_proportions_2indep,
-)
+from scipy import stats as sps
+from statsmodels.stats.proportion import confint_proportions_2indep
 from statsmodels.stats.proportion import (
     test_proportions_2indep as ztest_proportions_2indep,
 )
-from scipy import stats as sps
+from statsmodels.stats.weightstats import ttest_ind
 
-import copy
+from tw_experimentation.utils import ExperimentDataset
+from tw_experimentation.variance_reduction.cuped import CUPED, MultivariateCUPED
 
 
 # TODO: Write factory so that the frequentist test result can be

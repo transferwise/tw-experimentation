@@ -1,15 +1,12 @@
-import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
+import streamlit as st
 
-from tw_experimentation.setuper import (
-    Setuper,
-    effect_size_to_uplift,
-)
+from tw_experimentation.setuper import Setuper, effect_size_to_uplift
 from tw_experimentation.streamlit.streamlit_utils import (
     initalise_session_states,
-    wrapper_auto_calc_pre_experiment,
     wrap_button_auto_calc_pre_experiment,
+    wrapper_auto_calc_pre_experiment,
 )
 
 

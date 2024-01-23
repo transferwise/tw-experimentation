@@ -1,18 +1,13 @@
-import numpy as np
-
-
-from tw_experimentation.utils import ExperimentDataset, highlight
-from tw_experimentation.statistical_tests import FrequentistTest
-
-from tw_experimentation.setuper import Setuper, effect_size_to_uplift
-from tw_experimentation.segmentation_frequentist import Segmentation
-
-import plotly.graph_objects as go
-
 import ipywidgets as widgets
+import numpy as np
+import plotly.graph_objects as go
+from IPython.display import display
 from ipywidgets import interact
 
-from IPython.display import display
+from tw_experimentation.segmentation_frequentist import Segmentation
+from tw_experimentation.setuper import Setuper, effect_size_to_uplift
+from tw_experimentation.statistical_tests import FrequentistTest
+from tw_experimentation.utils import ExperimentDataset, highlight
 
 METRIC_TYPE_OPTIONS = [
     "binary",

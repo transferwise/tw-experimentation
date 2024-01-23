@@ -1,14 +1,14 @@
+import os
+
 import pytest
+from plotly import graph_objects as go
 
 from tw_experimentation.data_generation import RevenueConversion
 from tw_experimentation.result_generator import (
     generate_results,
-    save_output,
     load_output,
+    save_output,
 )
-import os
-
-from plotly import graph_objects as go
 
 
 @pytest.fixture()

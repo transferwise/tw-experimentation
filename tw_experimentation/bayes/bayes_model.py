@@ -1,23 +1,17 @@
-from tw_experimentation.constants import MetricType
-
-import pandas as pd
-import numpy as np
-
-
 from typing import List
 
+import numpy as np
 import numpyro
 import numpyro.distributions as dist
-
-
+import pandas as pd
 from jax import numpy as jnp
-
 
 from tw_experimentation.bayes.bayes_params import (
     DEFAULT_LIKELIHOOD_MODELS,
-    DEFAULT_PRIOR_MODELS,
     DEFAULT_PRIOR_MODEL_PARAMS,
+    DEFAULT_PRIOR_MODELS,
 )
+from tw_experimentation.constants import MetricType
 
 
 class BayesModel:

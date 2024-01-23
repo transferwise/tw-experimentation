@@ -1,23 +1,22 @@
-import pandas as pd
+from functools import wraps
+from typing import Dict, List, Optional, Union
+
+import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import plotly.express as px
+import statsmodels.api as sm
 from plotly import graph_objects as go
 from plotly.subplots import make_subplots
-from functools import wraps
+from scipy.stats.distributions import chi2
 
 from tw_experimentation.utils import (
-    variant_name_map,
     ExperimentDataset,
-    variant_color_map,
-    variantname_color_map,
     hex_to_rgb,
+    variant_color_map,
+    variant_name_map,
+    variantname_color_map,
 )
-from typing import List, Dict, Union, Optional
-
-import statsmodels.api as sm
-import matplotlib.pyplot as plt
-
-from scipy.stats.distributions import chi2
 
 MAX_N_POINTS = 8000
 

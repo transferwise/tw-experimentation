@@ -1,10 +1,10 @@
-from tw_experimentation.variance_reduction.cuped import (
-    CUPED,
-)
 from typing import List
-from typing_extensions import Self
-from sklearn.ensemble import HistGradientBoostingRegressor
+
 import pandas as pd
+from sklearn.ensemble import HistGradientBoostingRegressor
+from typing_extensions import Self
+
+from tw_experimentation.variance_reduction.cuped import CUPED
 
 
 class CUPAC(CUPED):

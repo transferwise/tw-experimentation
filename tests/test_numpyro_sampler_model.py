@@ -1,14 +1,11 @@
-import pytest
-
-from tw_experimentation.utils import ExperimentDataset
-from tw_experimentation.bayes.bayes_model import BayesModel
-from tw_experimentation.data_generation import RevenueConversion
-
-
 import numpyro.distributions as dist
-
+import pytest
 from jax import random
 from numpyro.infer import MCMC, NUTS
+
+from tw_experimentation.bayes.bayes_model import BayesModel
+from tw_experimentation.data_generation import RevenueConversion
+from tw_experimentation.utils import ExperimentDataset
 
 
 class TestNumpyroSampler(object):

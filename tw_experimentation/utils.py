@@ -1,10 +1,11 @@
 import os
 from dataclasses import dataclass
-from typing import List, Union, Optional
-import pandas as pd
-import numpy as np
-from numpy.distutils.misc_util import is_sequence
 from itertools import repeat
+from typing import List, Optional, Union
+
+import numpy as np
+import pandas as pd
+from numpy.distutils.misc_util import is_sequence
 
 from tw_experimentation.constants import PLOTLY_COLOR_PALETTE, MetricType
 

@@ -1,17 +1,18 @@
-import streamlit as st
-from tw_experimentation.streamlit.streamlit_utils import (
-    load_data,
-    initalise_session_states,
-    reset_exp_variables,
-    swap_checkbox_state,
-    cols_to_select,
-    exp_config_to_json,
-)
-from tw_experimentation.streamlit.streamlit_utils import generate_experiment_output
-from tw_experimentation.utils import ExperimentDataset
+import copy
 import json
 
-import copy
+import streamlit as st
+
+from tw_experimentation.streamlit.streamlit_utils import (
+    cols_to_select,
+    exp_config_to_json,
+    generate_experiment_output,
+    initalise_session_states,
+    load_data,
+    reset_exp_variables,
+    swap_checkbox_state,
+)
+from tw_experimentation.utils import ExperimentDataset
 
 
 def page_1_data_loading():

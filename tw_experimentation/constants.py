@@ -1,5 +1,6 @@
-import plotly.express as px
 from enum import Enum
+
+import plotly.express as px
 
 USERNAME = "snowflake_username"  # your username
 ACCOUNT = "account"

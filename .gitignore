@@ -4,7 +4,7 @@ notebooks/catboost_info/
 **/.ipynb_checkpoints/
 **/.DS_Store
 .vscode
-dist/ 
+dist/
 **/.pkl
 .pytest_cache/
 **/__pycache__/
@@ -28,7 +28,6 @@ dist/
 .idea/**/libraries
 
 *.tsv
-*.pyc 
+*.pyc
 .ipynb_checkpoints
 */.ipynb_checkpoints/*__pycache__/
-

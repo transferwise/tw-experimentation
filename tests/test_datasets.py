@@ -1,7 +1,7 @@
 import pytest
 
-from tw_experimentation.utils import ExperimentDataset
 from tw_experimentation.data_generation import RevenueConversion
+from tw_experimentation.utils import ExperimentDataset
 
 
 @pytest.fixture(params=[True, False])

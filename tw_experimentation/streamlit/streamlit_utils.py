@@ -5,57 +5,50 @@
 
 # sys.path.append(str(pathlib.Path().absolute()).split("/tw_experimentation")[0])
 
-from tw_experimentation.utils import ExperimentDataset
-from tw_experimentation.statistical_tests import (
-    FrequentistTest,
-    compute_frequentist_results,
-    run_cuped,
+import json
+from typing import List, Optional, Union
+
+import pandas as pd
+import streamlit as st
+from scipy.stats import chi2_contingency
+from snowflake.sqlalchemy import URL
+from sqlalchemy import create_engine
+
+from tw_experimentation.bayes.bayes_test import BayesTest
+from tw_experimentation.checker import (
+    Monitoring,
+    NormalityChecks,
+    SegmentMonitoring,
+    SequentialTest,
 )
+from tw_experimentation.constants import (
+    ACCOUNT,
+    AUTHENTICATOR,
+    COLORSCALES,
+    DATABASE,
+    REGION,
+    RESULT_DATABASE,
+    RESULT_SCHEMA,
+    RESULT_TABLE,
+    SOURCE_DATABASE,
+    SOURCE_SCHEMA,
+    SOURCE_TABLE,
+    USERNAME,
+    WAREHOUSE,
+)
+from tw_experimentation.plotting.monitoring_plots import fig_variant_segment_dependence
+from tw_experimentation.result_generator import generate_results
 from tw_experimentation.segmentation_frequentist import (
     Segmentation,
     run_segmentation_analysis,
 )
 from tw_experimentation.setuper import ExpDesignAutoCalculate
-from tw_experimentation.result_generator import generate_results
-
-from tw_experimentation.utils import variant_name_map
-from tw_experimentation.plotting.monitoring_plots import (
-    fig_variant_segment_dependence,
+from tw_experimentation.statistical_tests import (
+    FrequentistTest,
+    compute_frequentist_results,
+    run_cuped,
 )
-
-from tw_experimentation.checker import (
-    Monitoring,
-    SegmentMonitoring,
-    SequentialTest,
-    NormalityChecks,
-)
-from tw_experimentation.bayes.bayes_test import BayesTest
-
-import streamlit as st
-
-import pandas as pd
-from scipy.stats import chi2_contingency
-from snowflake.sqlalchemy import URL
-from sqlalchemy import create_engine
-import json
-
-from typing import Optional, List, Union
-
-from tw_experimentation.constants import (
-    COLORSCALES,
-    ACCOUNT,
-    REGION,
-    USERNAME,
-    AUTHENTICATOR,
-    DATABASE,
-    WAREHOUSE,
-    SOURCE_DATABASE,
-    SOURCE_SCHEMA,
-    SOURCE_TABLE,
-    RESULT_DATABASE,
-    RESULT_SCHEMA,
-    RESULT_TABLE,
-)
+from tw_experimentation.utils import ExperimentDataset, variant_name_map
 
 
 def fetch_data_from_table_name(warehouse: str, schema: str, table: str):

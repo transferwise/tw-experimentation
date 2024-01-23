@@ -1,28 +1,21 @@
-from tw_experimentation.utils import ExperimentDataset, variant_color_map, hex_to_rgb
-from tw_experimentation.statistical_tests import BaseTest
-from tw_experimentation.bayes.bayes_model import BayesModel
+from dataclasses import dataclass
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 import plotly.express as px
-
-
-from typing import List, Union, Optional, Tuple
-from numpy.random import binomial, poisson, lognormal
+import plotly.figure_factory as ff
+import plotly.graph_objects as go
+from jax import random as rd
+from numpy.random import binomial, lognormal, poisson
+from numpyro.diagnostics import hpdi
+from numpyro.infer import MCMC, NUTS, init_to_feasible
+from plotly.subplots import make_subplots
 from scipy.stats import gaussian_kde
 
-import plotly.graph_objects as go
-import plotly.figure_factory as ff
-from plotly.subplots import make_subplots
-
-
-from numpyro.diagnostics import hpdi
-
-from jax import random as rd
-from numpyro.infer import MCMC, NUTS, init_to_feasible
-
-from dataclasses import dataclass
-
+from tw_experimentation.bayes.bayes_model import BayesModel
+from tw_experimentation.statistical_tests import BaseTest
+from tw_experimentation.utils import ExperimentDataset, hex_to_rgb, variant_color_map
 
 NUM_SAMPLES_MIN = 5000
 NUM_SAMPLES_MAX = 15000
