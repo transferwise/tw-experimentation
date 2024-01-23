@@ -6,6 +6,7 @@ from tw_experimentation.streamlit.streamlit_utils import (
     swap_checkbox_state,
     cols_to_select,
     exp_config_to_json,
+    SnowflakeConnection,
 )
 from tw_experimentation.streamlit.streamlit_utils import generate_experiment_output
 from tw_experimentation.utils import ExperimentDataset
@@ -14,7 +15,7 @@ import json
 import copy
 
 
-def page_1_data_loading(snowflake_connector=None):
+def page_1_data_loading(snowflake_connector=SnowflakeConnection()):
     st.session_state.update(st.session_state)
 
     DATA_PAGE = "Data Loading"
@@ -25,6 +26,8 @@ def page_1_data_loading(snowflake_connector=None):
 
     st.session_state["last_page"] = DATA_PAGE
 
+    if st.session_state["snowflake_connection"] is None:
+        st.session_state["snowflake_connection"] = snowflake_connector
     st.header("Data import")
     st.write(
         "If you simply want to use the sample size calculator without any dataset, "
@@ -40,7 +43,7 @@ def page_1_data_loading(snowflake_connector=None):
 
         if file is not None:
             df = load_data(file)
-            st.session_state["data_loader"].df = df
+            st.session_state["df_temp"] = df
             st.write("File uploaded")
 
     if load_type == "Snowflake query":
@@ -92,12 +95,28 @@ def page_1_data_loading(snowflake_connector=None):
         )
 
         if st.button("Fetch data from snowflake"):
-            st.session_state["data_loader"].pull_snowflake_table(
-                **snowflake_pull_kwargs
+            st.session_state["snowflake_connection"].connect(
+                restart_engine=restart_snowflake
             )
+            # st.session_state["data_loader"].pull_snowflake_table(
+            #     **snowflake_pull_kwargs
+            # )
+            if snowflake_import == "query":
+                st.session_state["df_temp"] = st.session_state[
+                    "snowflake_connection"
+                ].load_table(sql_query=st.session_state["query"])
+            elif snowflake_import == "table name":
+                st.session_state["df_temp"] = st.session_state[
+                    "snowflake_connection"
+                ].load_table(
+                    source_database=st.session_state["warehouse"],
+                    source_schema=st.session_state["schema"],
+                    source_table=st.session_state["table"],
+                    user=st.session_state["snowflake_username"],
+                )
             st.session_state.has_snowflake_connection = True
 
-    if st.session_state["data_loader"].df is not None:
+    if st.session_state["df_temp"] is not None:
         st.divider()
         with st.expander("Load configuration from json"):
             st.write(
@@ -171,7 +190,7 @@ def page_1_data_loading(snowflake_connector=None):
             ]
         ]
         cols_for_selection = cols_to_select(
-            st.session_state["data_loader"].df.columns, cols_to_exclude
+            st.session_state["df_temp"].columns, cols_to_exclude
         )
 
         if st.session_state["is_experiment"]:
@@ -283,7 +302,7 @@ def page_1_data_loading(snowflake_connector=None):
                     len(st.session_state["pre_experiment"]) > 0
                 ), "Must specify at least one pre-experiment metric"
                 st.session_state.ed = ExperimentDataset(
-                    data=copy.deepcopy(st.session_state["data_loader"].df),
+                    data=copy.deepcopy(st.session_state["df_temp"]),
                     variant="",
                     targets="",
                     pre_experiment_cols=st.session_state["pre_experiment"],
@@ -294,7 +313,7 @@ def page_1_data_loading(snowflake_connector=None):
                 if not st.session_state["is_dynamic_experiment_temp"]:
                     st.session_state["timestamp"] = None
                 st.session_state.ed = ExperimentDataset(
-                    data=copy.deepcopy(st.session_state["data_loader"].df),
+                    data=copy.deepcopy(st.session_state["df_temp"]),
                     variant=st.session_state["variant"],
                     targets=st.session_state["outcomes"],
                     date=(
@@ -302,9 +321,9 @@ def page_1_data_loading(snowflake_connector=None):
                         if st.session_state["is_dynamic_experiment"]
                         else None
                     ),
-                    n_variants=st.session_state["data_loader"]
-                    .df[st.session_state["variant"]]
-                    .nunique(),
+                    n_variants=st.session_state["df_temp"][
+                        st.session_state["variant"]
+                    ].nunique(),
                     pre_experiment_cols=st.session_state["pre_experiment"],
                     segments=st.session_state["segments"],
                 )
@@ -328,7 +347,7 @@ def page_1_data_loading(snowflake_connector=None):
                         st.session_state["timestamp"] = None
                     st.cache_data.clear()
                     generate_experiment_output(
-                        copy.deepcopy(st.session_state["data_loader"].df),
+                        copy.deepcopy(st.session_state["df_temp"]),
                         variant=st.session_state["variant"],
                         targets=st.session_state["outcomes"],
                         date_created=(

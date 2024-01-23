@@ -65,6 +65,10 @@ class SnowflakeConnection(ABC):
     def require_username(self):
         pass
 
+    @abstractmethod
+    def connect(self, restart_engine=False, **kwargs):
+        pass
+
     def load_table(
         self,
         sql_query=None,
@@ -96,14 +100,19 @@ class SnowflakeIndividualCredentials(SnowflakeConnection):
 
     def connect(
         self,
+        restart_engine=False,
         user=USERNAME,
         account=ACCOUNT,
         region=REGION,
         authenticator=AUTHENTICATOR,
         database=DATABASE,
         warehouse=WAREHOUSE,
-        restart_engine=False,
     ):
+        credentials = [user, account, region, authenticator, database, warehouse]
+        assert all(
+            [False if cred is None else True for cred in credentials]
+        ), "Please specify your snowflake credentials in "
+        "tw_experimentation/snowflake_config.py"
         if self.engine is None or self.connection is None or restart_engine:
             self.engine = create_engine(
                 URL(
@@ -168,6 +177,8 @@ def initalise_session_states():
         "timestamp_temp": None,
         "ed": None,
         "data_loader": PullAndMatchData(),
+        "snowflake_connection": None,
+        "df_temp": None,
         "is_defined_data_model": False,
         "evaluate_CUPED": False,
         "exp_design_alpha": 5,
