@@ -5,7 +5,6 @@ import plotly.graph_objects as go
 from tw_experimentation.setuper import (
     Setuper,
     effect_size_to_uplift,
-    ExpDesignAutoCalculate,
 )
 from tw_experimentation.streamlit.streamlit_utils import (
     initalise_session_states,
@@ -26,16 +25,16 @@ def page_2_experiment_design():
 
     st.markdown(
         r"""
-        We first determine the targeted sample size based on the minimal detectable effect. 
+        We first determine the targeted sample size based on the minimal detectable effect.
 
-        If we want to document a certain uplift, we also need to provide 
+        If we want to document a certain uplift, we also need to provide
         - an estimate of the population mean (e.g., baseline conversion for binary outcomes),
         - treatment share,
         - type-I error $\alpha$, and
         - type-II error $\beta$. (***$\beta$ = 1 - Power***)
         - effect relation to base metric / mean: 'absolute' or 'relative'
-        
-        
+
+
         """
     )
     st.write(
@@ -50,7 +49,7 @@ def page_2_experiment_design():
         else None
     )
     if targets_pre_experiment is not None and len(targets_pre_experiment) > 0:
-        edac = wrapper_auto_calc_pre_experiment(st.session_state.ed)
+        _ = wrapper_auto_calc_pre_experiment(st.session_state.ed)
         st.divider()
         with st.expander("Auto-calculate from pre-experiment data"):
             st.markdown(
@@ -150,9 +149,7 @@ def page_2_experiment_design():
         st.number_input("Baseline mean", min_value=0.0, key="exp_design_baseline_mean")
         st.number_input("Standard deviation", min_value=0.0, key="exp_design_sd")
 
-    ###########################
-    ##### Plotting ############
-    ###########################
+    # Plotting
 
     if st.session_state["exp_design_metric_type"] == "binary":
         sd = np.sqrt(
@@ -173,12 +170,15 @@ def page_2_experiment_design():
         x_sample_size = np.linspace(
             200 if max_sample_size > 500 else 20, max_sample_size, num=100
         )
-        uplift_map = lambda x: effect_size_to_uplift(
-            setup.effect_size_two_sample_z_test(x),
-            st.session_state["exp_design_baseline_conversion"],
-            sd,
-            relation=st.session_state["exp_design_effect_type"],
-        )
+
+        def uplift_map(x):
+            effect_size_to_uplift(
+                setup.effect_size_two_sample_z_test(x),
+                st.session_state["exp_design_baseline_conversion"],
+                sd,
+                relation=st.session_state["exp_design_effect_type"],
+            )
+
         uplift = np.array(list(map(uplift_map, x_sample_size)))
 
         fig = go.FigureWidget(data=go.Scatter(x=x_sample_size, y=uplift))
@@ -206,12 +206,15 @@ def page_2_experiment_design():
         x_sample_size = np.linspace(
             200 if max_sample_size > 500 else 20, max_sample_size, num=100
         )
-        uplift_map = lambda x: effect_size_to_uplift(
-            setup.effect_size_t_test(x),
-            st.session_state["exp_design_baseline_mean"],
-            st.session_state["exp_design_sd"],
-            relation=st.session_state["exp_design_effect_type"],
-        )
+
+        def uplift_map(x):
+            effect_size_to_uplift(
+                setup.effect_size_t_test(x),
+                st.session_state["exp_design_baseline_mean"],
+                st.session_state["exp_design_sd"],
+                relation=st.session_state["exp_design_effect_type"],
+            )
+
         uplift = np.array(list(map(uplift_map, x_sample_size)))
         fig = go.FigureWidget(data=go.Scatter(x=x_sample_size, y=uplift))
         fig.add_vline(

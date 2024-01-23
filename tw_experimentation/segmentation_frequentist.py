@@ -25,10 +25,12 @@ class SegmentationOutput:
 
     Attributes:
         segments (List[str]): List of segment names.
-        wise_pizza (pd.DataFrame): DataFrame containing the results of the analysis for each segment.
+        wise_pizza (pd.DataFrame): DataFrame containing the results of the
+            analysis for each segment.
         segment_results (Dict[str, Dict[str, FrequentistTestResults]]):
             Dictionary containing the results of the frequentist tests for each segment.
-            segment_results[category][segment] contains for each category the frequentist output for the segment.
+            segment_results[category][segment] contains for each category the
+                frequentist output for the segment.
 
     Methods:
         segment_output(segment: str) -> pd.DataFrame:
@@ -172,9 +174,13 @@ class SegmentationNew:
 
         Args:
             treatment (int, optional): name of variant at consideration. Defaults to 1.
-            segments (List, optional): categorical segments to consider. Defaults to List[str].
-            max_depth (int, optional): wise pizza parameter for max number of segment combinations. Defaults to 2.
-            min_segments (int, optional): wise pizza parameter for minimal no. of segments to display. Defaults to 3.
+            segments (List, optional): categorical segments to consider.
+                Defaults to List[str].
+            max_depth (int, optional): wise pizza parameter for max number of
+                segment combinations.
+                Defaults to 2.
+            min_segments (int, optional): wise pizza parameter for minimal
+            no. of segments to display. Defaults to 3.
 
         Returns:
             pd.DataFrame: frequentist result table for wise pizza selected segments
@@ -318,10 +324,14 @@ class Segmentation:
         of segments.
 
         Args:
-            treatment (int, optional): name of variant at consideration. Defaults to 1.
-            segments (List, optional): categorical segments to consider. Defaults to List[str].
-            max_depth (int, optional): wise pizza parameter for max number of segment combinations. Defaults to 2.
-            min_segments (int, optional): wise pizza parameter for minimal no. of segments to display. Defaults to 3.
+            treatment (int, optional): name of variant at consideration.
+                Defaults to 1.
+            segments (List, optional): categorical segments to consider.
+                Defaults to List[str].
+            max_depth (int, optional): wise pizza parameter for max
+                number of segment combinations. Defaults to 2.
+            min_segments (int, optional): wise pizza parameter for minimal
+                no. of segments to display. Defaults to 3.
 
         Returns:
             pd.DataFrame: frequentist result table for wise pizza selected segments

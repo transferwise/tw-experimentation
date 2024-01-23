@@ -8,7 +8,7 @@ from scipy.stats.contingency import expected_freq
 import statsmodels.api as sm
 from itertools import product
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from typing import List, Dict, Union
 import copy
@@ -68,8 +68,10 @@ class Monitoring:
         the total sample size.
 
         Returns:
-            pandas.DataFrame: A DataFrame with the sample sizes for each variant and the total sample size.
-                The index contains the variant names and "Total sample size", and the only column is "Sample size".
+            pandas.DataFrame: A DataFrame with the sample sizes for each variant and
+                the total sample size.
+                The index contains the variant names and "Total sample size",
+                    and the only column is "Sample size".
         """
         SAMPLE_SIZE_TITLE = "Sample size"
         sample_size_now = self.ed.sample_sizes
@@ -155,7 +157,8 @@ class NormalityChecks:
     relevant_targets : list
         A list of relevant targets for the experiment. Binary targets are excluded.
     standardized_residuals : dict
-        A dictionary containing standardized residuals for each relevant target and variant.
+        A dictionary containing standardized residuals for each relevant target
+            and variant.
 
     Methods:
     --------
@@ -229,10 +232,12 @@ class NormalityChecks:
         test results.
 
         Args:
-            alpha (float): The significance level for the Shapiro-Wilk test. Defaults to 0.05.
+            alpha (float): The significance level for the Shapiro-Wilk test.
+                Defaults to 0.05.
 
         Returns:
-            NormalityChecksOutput: An object containing the relevant targets, QQ plots, and Shapiro-Wilk test results.
+            NormalityChecksOutput: An object containing the relevant targets, QQ plots,
+                and Shapiro-Wilk test results.
         """
         figs_qqplots = self.all_qqplots()
         tables_shapiro_wilk = self.all_shapiro_wilk_tests(alpha=alpha)
@@ -291,7 +296,8 @@ class SegmentMonitoring(Monitoring):
             segment (str): The name of the segment to compute the descriptives for.
 
         Returns:
-            pandas.DataFrame: A DataFrame containing the dynamic sample size descriptives for the given segment.
+            pandas.DataFrame: A DataFrame containing the dynamic sample size
+                descriptives for the given segment.
         """
         assert self.ed.is_dynamic_observation
         df_dyn_avg = super()._dynamic_sample_size_descriptives()
@@ -319,8 +325,10 @@ class SegmentMonitoring(Monitoring):
             alpha (float): The significance level for the test. Default is 0.05.
 
         Returns:
-            pandas.DataFrame: A table with the p-value and decision for each segment, indicating whether the null hypothesis
-            of independence between the variant and the segment can be rejected at the given significance level.
+            pandas.DataFrame: A table with the p-value and decision for each segment,
+                indicating whether the null hypothesis
+                of independence between the variant and the segment can be rejected
+                at the given significance level.
         """
 
         chi_squared = {"segment": [], "p-value": []}
@@ -346,15 +354,18 @@ class SegmentMonitoring(Monitoring):
         return df_chi_squared
 
     def _chi_squared_table(self, dimension: str):
-        """Create a chi-squared table for a given dimension versus variant assignment
-        Creates a table with statistic (Observed frequency - Expected frequency)^2 / Expected frequency
+        """Create a chi-squared table for a given dimension
+            versus variant assignment
+        Creates a table with statistic
+        (Observed frequency - Expected frequency)^2 / Expected frequency
         for each variant and dimension value combination.
 
         Args:
             dimension (str): segment to monitor / run independence test on
 
         Returns:
-            pd.DataFrame: Table with chi-squared statistic for each variant and dimension value combination
+            pd.DataFrame: Table with chi-squared statistic for each variant and
+            dimension value combination
         """
         ct = pd.crosstab(self.ed.data[self.ed.variant], self.ed.data[dimension])
         chi_squared_table = (ct - expected_freq(ct)) ** 2 / expected_freq(ct)
@@ -425,8 +436,10 @@ class SequentialTest:
 
         Args:
             metrics (List[str]): A list of metric names to test.
-            effect_size_means (List[float]): A list of expected effect size means for each metric.
-            sds (List[float]): A list of expected standard deviations for each metric.
+            effect_size_means (List[float]): A list of expected effect size
+                means for each metric.
+            sds (List[float]): A list of expected standard deviations
+                for each metric.
             alpha (float): The significance level for the tests.
 
         Returns:
@@ -450,7 +463,7 @@ class SequentialTest:
             )
         )
 
-        df_dyn_avg[f"variant_cnt"] = df_base.groupby(self.ed.variant, group_keys=False)[
+        df_dyn_avg["variant_cnt"] = df_base.groupby(self.ed.variant, group_keys=False)[
             metrics[0]
         ].apply(
             lambda x: x.expanding(
@@ -508,7 +521,7 @@ class SequentialTest:
             )
         try:
             df_dyn_avg = df_dyn_avg.groupby(self.ed.variant).tail(-50)
-        except Exception as e:
+        except Exception as e:  # noqaF841
             print("Should have at least 50 data points per variant.")
 
         df_dyn_avg[[f"{m}_CI_lower" for m in metrics]] = df_dyn_avg.groupby(
@@ -557,19 +570,26 @@ class SequentialTest:
         sds: dict = None,
         alpha: float = 0.05,
     ):
-        """Computes sequential testing results for a list of metrics, using the effect
-        size means and standard deviations provided, or default values if not specified.
+        """Computes sequential testing results for a list of metrics,
+            using the effect size means and standard deviations provided,
+            or default values if not specified.
 
         Args:
-            metrics (List): A list of metric names to compute sequential testing results for.
-            effect_size_means (dict): A dictionary mapping metric names to effect size means.
-                If not provided, default values are computed based on the data (not recommended).
+            metrics (List): A list of metric names to compute
+                sequential testing results for.
+            effect_size_means (dict): A dictionary mapping metric
+                names to effect size means.
+                If not provided, default values are computed based
+                    on the data (not recommended).
             sds (dict): A dictionary mapping metric names to standard deviations.
-                If not provided, default values are computed based on the data (not recommended).
-            alpha (float): The significance level for the sequential tests. Default is 0.05.
+                If not provided, default values are computed based
+                    on the data (not recommended).
+            alpha (float): The significance level for the sequential tests.
+                Default is 0.05.
 
         Returns:
-            pandas.DataFrame: A DataFrame containing the sequential testing results for each metric.
+            pandas.DataFrame: A DataFrame containing the sequential
+                testing results for each metric.
         """
 
         metrics = self.ed.targets

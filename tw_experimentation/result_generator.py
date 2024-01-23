@@ -35,11 +35,15 @@ def generate_results(
         df (pd.DataFrame): dataframe with experiment data
         variant (str): variant name
         targets (List[str]): target names
-        date_created (Optional[str], optional): timestamp column name. Defaults to None.
-        pre_experiment_cols (Optional[List[str]], optional): pre-experiment outcome metrics. Defaults to None.
-        segments (Optional[List[str]], optional): segments for monitoring and segmentation analysis.
+        date_created (Optional[str], optional): timestamp column name.
             Defaults to None.
-        remove_outliers (bool, optional): Whether to remove outliers from continuous variables.
+        pre_experiment_cols (Optional[List[str]], optional): pre-experiment
+            outcome metrics.Defaults to None.
+        segments (Optional[List[str]], optional): segments for monitoring and
+            segmentation analysis.
+            Defaults to None.
+        remove_outliers (bool, optional): Whether to remove outliers
+            from continuous variables.
             Defaults to True.
 
     Returns:

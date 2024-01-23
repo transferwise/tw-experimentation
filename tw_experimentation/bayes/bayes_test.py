@@ -1,19 +1,14 @@
-import sys, os
-
-#### for debugging only ##############################
-root_path = os.path.realpath("")
-sys.path.insert(0, root_path + "/tw-experimentation")
-#######################################################
-
-import numpy as np
-
 from tw_experimentation.utils import ExperimentDataset, variant_color_map, hex_to_rgb
 from tw_experimentation.statistical_tests import BaseTest
 from tw_experimentation.bayes.bayes_model import BayesModel
 
+import numpy as np
+import pandas as pd
+import plotly.express as px
+
 
 from typing import List, Union, Optional, Tuple
-from numpy.random import binomial, poisson, lognormal, normal
+from numpy.random import binomial, poisson, lognormal
 from scipy.stats import gaussian_kde
 
 import plotly.graph_objects as go
@@ -21,7 +16,6 @@ import plotly.figure_factory as ff
 from plotly.subplots import make_subplots
 
 
-import numpyro.distributions as dist
 from numpyro.diagnostics import hpdi
 
 from jax import random as rd
@@ -214,7 +208,8 @@ class BayesResult:
 
         Args:
             target (str): target metric
-            scale_param (Optional[float], optional): Cohen's d approximate . Defaults to .1.
+            scale_param (Optional[float], optional): Cohen's d approximate .
+                Defaults to .1.
 
         Returns:
             float, float: interval lower and upper bounds
@@ -279,7 +274,8 @@ class BayesResult:
                 fill="tozeroy",
                 mode="none",
                 fillcolor=(
-                    f"rgba{(*hex_to_rgb(color_per_variant[k][1:]), distribution_opacity)}"
+                    "rgba"
+                    f"{(*hex_to_rgb(color_per_variant[k][1:]), distribution_opacity)}"
                 ),
                 showlegend=False,
                 row=1,
@@ -305,7 +301,8 @@ class BayesResult:
 
         Args:
             target (str): target metric
-            distribution_opacity (float): opacity of the distribution plot shades. Defaults to 0.3.
+            distribution_opacity (float): opacity of the distribution plot shades.
+                Defaults to 0.3.
         Returns:
             plotly figure
         """
@@ -330,8 +327,10 @@ class BayesResult:
 
         Args:
             target (str): The target for which to generate the plot.
-            distribution_opacity (float, optional): The opacity of the distribution plot. Defaults to 0.3.
-            facet_rows_variant (bool, optional): Whether to facet the plot by variant. Defaults to False.
+            distribution_opacity (float, optional): The opacity of the distribution
+                plot. Defaults to 0.3.
+            facet_rows_variant (bool, optional): Whether to facet the plot by variant.
+                Defaults to False.
 
         Returns:
             fig: The plotly figure object.
@@ -346,7 +345,8 @@ class BayesResult:
         )
         fig.update_layout(
             title_text=(
-                f"{target}: Empirical cumulative distribution (ECDF) function of treatment effect"
+                f"{target}: Empirical cumulative distribution (ECDF) function of"
+                "treatment effect"
             )
         )
         return fig
@@ -359,7 +359,8 @@ class BayesResult:
 
         Args:
             target (str): target metric
-            distribution_opacity (float): opacity of the distribution plot shades. Defaults to 0.3.
+            distribution_opacity (float): opacity of the distribution plot shades.
+                Defaults to 0.3.
         Returns:
             plotly figure
         """
@@ -389,13 +390,16 @@ class BayesResult:
         difference in means between the variant and the control group.
 
         Args:
-            sample_per_variant (dict): A dictionary mapping variant names to lists of samples.
-            distribution_opacity (float, optional): The opacity of any shaded area. Defaults to 0.3.
-            facet_rows_variant (bool, optional): Whether to facet the plot by variant. Defaults to False.
+            sample_per_variant (dict): A dictionary mapping variant names to lists
+                of samples.
+            distribution_opacity (float, optional): The opacity of any shaded area.
+                Defaults to 0.3.
+            facet_rows_variant (bool, optional): Whether to facet the plot by variant.
+                Defaults to False.
             shade_areas (bool, optional): Whether to shade an area. Not implemented yet
                 Defaults to True.
-            shade_limits (Tuple[Union[float, None], Union[float, None]], optional): The lower and
-                upper limits of the shaded area. Not implemented yet
+            shade_limits (Tuple[Union[float, None], Union[float, None]], optional):
+                The lower and upper limits of the shaded area. Not implemented yet
                 Defaults to (None, None).
 
         Returns:
@@ -791,7 +795,8 @@ class BayesTest(BaseTest):
         pass
 
     def _store_posterior_samples(self, target):
-        # method to extract the posterior samples from the mcmc object where it is hidden a bit
+        # method to extract the posterior samples from the mcmc object
+        # where it is hidden a bit
         self.posterior_samples[target] = {}
         for variable in self.variables_per_target[target]:
             self.posterior_samples[target][variable] = {}
@@ -825,7 +830,8 @@ class BayesTest(BaseTest):
             )
 
     def _store_prior_samples(self, target, prior_sampler):
-        # method to extract the prior samples from the mcmc object where it is hidden a bit
+        # method to extract the prior samples from the mcmc
+        # object where it is hidden a bit
         self.prior_samples[target] = {}
         for variable in self.variables_per_target[target]:
             self.prior_samples[target][variable] = {}

@@ -1,13 +1,9 @@
 import pytest
-import warnings
 
 from tw_experimentation.utils import ExperimentDataset
 
 from tw_experimentation.bayes.bayes_test import BayesTest
 from tw_experimentation.data_generation import RevenueConversion
-from tw_experimentation.bayes.numpyro_monkeypatch import ZeroInflatedLogNormal
-
-from numpyro.distributions import LogNormal, Gamma, Uniform
 
 
 class TestBayesTesterEndToEnd(object):

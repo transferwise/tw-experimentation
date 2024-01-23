@@ -315,10 +315,10 @@ def page_1_data_loading(snowflake_connector=None):
         if st.session_state["ed"] is not None:
             st.write(
                 """
-                     You can also generate the all results at this point. If you do not click the button,
-                     the output will be computed as you click through the pages.
-                     Generating the results may take a while and you can decide to do it now or later.
-                     """
+                You can also generate the all results at this point. If you do not click the button,
+                the output will be computed as you click through the pages.
+                Generating the results may take a while and you can decide to do it now or later.
+                """
             )
             if st.button("Compute results"):
                 if not st.session_state["is_experiment"]:
