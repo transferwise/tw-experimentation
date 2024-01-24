@@ -4,10 +4,13 @@ notebooks/catboost_info/
 **/.ipynb_checkpoints/
 **/.DS_Store
 .vscode
-dist/ 
+dist/
 **/.pkl
 .pytest_cache/
 **/__pycache__/
+
+# only to be modified locally:
+**/snowflake_config.json
 
 # User-specific stuff:
 .idea/**/workspace.xml
@@ -28,7 +31,6 @@ dist/
 .idea/**/libraries
 
 *.tsv
-*.pyc 
+*.pyc
 .ipynb_checkpoints
 */.ipynb_checkpoints/*__pycache__/
-
