@@ -6,7 +6,7 @@ from tw_experimentation.streamlit.streamlit_utils import (
     swap_checkbox_state,
     cols_to_select,
     exp_config_to_json,
-    SnowflakeConnection,
+    SnowflakeIndividualCredentials,
 )
 from tw_experimentation.streamlit.streamlit_utils import generate_experiment_output
 from tw_experimentation.utils import ExperimentDataset
@@ -15,7 +15,7 @@ import json
 import copy
 
 
-def page_1_data_loading(snowflake_connector=SnowflakeConnection()):
+def page_1_data_loading(snowflake_connector=SnowflakeIndividualCredentials()):
     st.session_state.update(st.session_state)
 
     DATA_PAGE = "Data Loading"
@@ -53,12 +53,6 @@ def page_1_data_loading(snowflake_connector=SnowflakeConnection()):
         if snowflake_import == "query":
             st.text_input("SQL query", key="query")
 
-            snowflake_pull_kwargs = {
-                "sql_query": st.session_state["query"],
-                "user": st.session_state["snowflake_username"],
-                "restart_engine": restart_snowflake,
-            }
-
         if snowflake_import == "table name":
             col11, col12, col13 = st.columns(3)
 
@@ -74,33 +68,61 @@ def page_1_data_loading(snowflake_connector=SnowflakeConnection()):
                 )
             with col13:
                 st.text_input("Table", key="table")
-            snowflake_pull_kwargs = dict(
-                source_database=st.session_state["warehouse"],
-                source_schema=st.session_state["schema"],
-                source_table=st.session_state["table"],
-                user=st.session_state["snowflake_username"],
-                restart_engine=restart_snowflake,
-            )
 
-        enter_username = False
+        enter_credentials = False
         if not st.session_state.has_snowflake_connection:
-            enter_username = True
+            enter_credentials = True
         else:
             restart_snowflake = st.checkbox("Restart snowflake connection")
 
-        st.session_state["snowflake_username"] = st.text_input(
-            "Snowflake username",
-            st.session_state["snowflake_username"],
-            disabled=not (enter_username or restart_snowflake),
-        )
+        if len(st.session_state["snowflake_connection"].input_configs) > 0:
+            with st.expander("Load snowflake configuration from json"):
+                st.write(
+                    """
+                        You can load a snowflake configuration from a json file.
+                        """
+                )
+                st.write(
+                    """
+                    You can upload a json file of the format, e.g.,
+                    {
+                        "user" = "USERNAME",
+                        "region" = "REGION"
+                    }
+                    """
+                )
+                config_json_snowflake = st.file_uploader(
+                    "Upload a json config file for snowflake", type="json"
+                )
+
+                if config_json_snowflake is not None:
+                    try:
+                        json_content_snowflake = config_json_snowflake.getvalue()
+                        exp_config = json.loads(json_content_snowflake)
+                        st.write(exp_config)
+                        for config, value in exp_config.items():
+                            st.session_state["snowflake_" + config] = value
+                    except json.JSONDecodeError:
+                        st.error("Invalid JSON file. Please upload a valid JSON file.")
+        for config_variable in st.session_state["snowflake_connection"].input_configs:
+            initalise_session_states({"snowflake_" + config_variable: ""})
+            st.text_input(
+                config_variable,
+                st.session_state["snowflake_" + config_variable],
+                disabled=not (enter_credentials or restart_snowflake),
+            )
 
         if st.button("Fetch data from snowflake"):
+            account_configs = {
+                config_variable: st.session_state["snowflake_" + config_variable]
+                for config_variable in st.session_state[
+                    "snowflake_connection"
+                ].input_configs
+            }
+            st.session_state["snowflake_connection"].account_config = account_configs
             st.session_state["snowflake_connection"].connect(
                 restart_engine=restart_snowflake
             )
-            # st.session_state["data_loader"].pull_snowflake_table(
-            #     **snowflake_pull_kwargs
-            # )
             if snowflake_import == "query":
                 st.session_state["df_temp"] = st.session_state[
                     "snowflake_connection"
@@ -112,7 +134,6 @@ def page_1_data_loading(snowflake_connector=SnowflakeConnection()):
                     source_database=st.session_state["warehouse"],
                     source_schema=st.session_state["schema"],
                     source_table=st.session_state["table"],
-                    user=st.session_state["snowflake_username"],
                 )
             st.session_state.has_snowflake_connection = True
 

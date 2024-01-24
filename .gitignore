@@ -10,7 +10,7 @@ dist/
 **/__pycache__/
 
 # only to be modified locally:
-tw_experimentation/snowflake_config.py
+**/snowflake_config.json
 
 # User-specific stuff:
 .idea/**/workspace.xml
