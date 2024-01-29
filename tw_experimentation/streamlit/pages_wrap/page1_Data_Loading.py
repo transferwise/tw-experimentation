@@ -111,8 +111,10 @@ def page_1_data_loading(snowflake_connector=SnowflakeIndividualCredentials()):
                 st.session_state["snowflake_" + config_variable],
                 disabled=not (enter_credentials or restart_snowflake),
             )
-
-        if st.button("Fetch data from snowflake"):
+        if not st.session_state["fetch_from_snowflake_button"]:
+            if st.button("Fetch data from snowflake"):
+                st.session_state["fetch_from_snowflake_button"] = True
+        if st.session_state["fetch_from_snowflake_button"]:
             account_configs = {
                 config_variable: st.session_state["snowflake_" + config_variable]
                 for config_variable in st.session_state[
@@ -136,6 +138,7 @@ def page_1_data_loading(snowflake_connector=SnowflakeIndividualCredentials()):
                     source_table=st.session_state["table"],
                 )
             st.session_state.has_snowflake_connection = True
+            st.session_state["fetch_from_snowflake_button"] = False
 
     if st.session_state["df_temp"] is not None:
         st.divider()
