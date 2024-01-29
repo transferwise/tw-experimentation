@@ -86,7 +86,7 @@ class SnowflakeConnection(ABC):
                 select * from {source_database}.{source_schema}.{source_table}
                 """
         df = pd.read_sql(sql_query, self.connection)
-
+        st.session_state["fetch_from_snowflake_button"] = False
         return df
 
     def close_connection(self):
@@ -178,6 +178,7 @@ def initalise_session_states(additional_params: Optional[Dict] = dict()):
         "ed": None,
         "data_loader": PullAndMatchData(),
         "snowflake_connection": None,
+        "fetch_from_snowflake_button": False,
         "df_temp": None,
         "is_defined_data_model": False,
         "evaluate_CUPED": False,
