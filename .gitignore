@@ -9,6 +9,9 @@ dist/
 .pytest_cache/
 **/__pycache__/
 
+# only to be modified locally:
+**/snowflake_config.json
+
 # User-specific stuff:
 .idea/**/workspace.xml
 .idea/**/tasks.xml

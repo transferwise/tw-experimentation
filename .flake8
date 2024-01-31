@@ -15,3 +15,4 @@ per-file-ignores =
   tw_experimentation/streamlit/pages_wrap/page1_Data_Loading.py:E501
   tw_experimentation/streamlit/pages_wrap/page5_Experiment_Evaluation_Bayesian.py:E501
   tw_experimentation/streamlit/Main.py:E501
+  tw_experimentation/streamlit/streamlit_utils.py:E402

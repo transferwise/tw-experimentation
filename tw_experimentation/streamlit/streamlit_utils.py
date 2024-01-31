@@ -1,54 +1,135 @@
-# import sys, os, pathlib
+import sys
+import os
 
-# root_path = os.path.realpath("../..")
-# sys.path.insert(0, root_path)
+root_path = os.path.realpath("../..")
+sys.path.insert(0, root_path)
 
-# sys.path.append(str(pathlib.Path().absolute()).split("/tw_experimentation")[0])
-
-import json
-from typing import List, Optional, Union
-
-import pandas as pd
-import streamlit as st
-from scipy.stats import chi2_contingency
-from snowflake.sqlalchemy import URL
-from sqlalchemy import create_engine
-
-from tw_experimentation.bayes.bayes_test import BayesTest
-from tw_experimentation.checker import (
-    Monitoring,
-    NormalityChecks,
-    SegmentMonitoring,
-    SequentialTest,
-)
-from tw_experimentation.constants import (
-    ACCOUNT,
-    AUTHENTICATOR,
-    COLORSCALES,
-    DATABASE,
-    REGION,
-    RESULT_DATABASE,
-    RESULT_SCHEMA,
-    RESULT_TABLE,
-    SOURCE_DATABASE,
-    SOURCE_SCHEMA,
-    SOURCE_TABLE,
-    USERNAME,
-    WAREHOUSE,
-)
-from tw_experimentation.plotting.monitoring_plots import fig_variant_segment_dependence
-from tw_experimentation.result_generator import generate_results
-from tw_experimentation.segmentation_frequentist import (
-    Segmentation,
-    run_segmentation_analysis,
-)
-from tw_experimentation.setuper import ExpDesignAutoCalculate
+from tw_experimentation.utils import ExperimentDataset
 from tw_experimentation.statistical_tests import (
     FrequentistTest,
     compute_frequentist_results,
     run_cuped,
 )
-from tw_experimentation.utils import ExperimentDataset, variant_name_map
+from tw_experimentation.segmentation_frequentist import (
+    Segmentation,
+    run_segmentation_analysis,
+)
+from tw_experimentation.setuper import ExpDesignAutoCalculate
+from tw_experimentation.result_generator import generate_results
+
+from tw_experimentation.utils import variant_name_map
+from tw_experimentation.plotting.monitoring_plots import (
+    fig_variant_segment_dependence,
+)
+
+from tw_experimentation.checker import (
+    Monitoring,
+    SegmentMonitoring,
+    SequentialTest,
+    NormalityChecks,
+)
+from tw_experimentation.bayes.bayes_test import BayesTest
+from tw_experimentation.constants import (
+    ACCOUNT,
+    REGION,
+    USERNAME,
+    AUTHENTICATOR,
+    DATABASE,
+    WAREHOUSE,
+    SOURCE_DATABASE,
+    SOURCE_SCHEMA,
+    SOURCE_TABLE,
+    RESULT_DATABASE,
+    RESULT_SCHEMA,
+    RESULT_TABLE,
+    COLORSCALES,
+)
+
+from abc import ABC, abstractmethod
+import streamlit as st
+
+import pandas as pd
+from scipy.stats import chi2_contingency
+from snowflake.sqlalchemy import URL
+from sqlalchemy import create_engine
+import json
+
+from typing import Optional, List, Union, Dict
+
+
+class SnowflakeConnection(ABC):
+    def __init__(self):
+        self.connection = None
+        self.engine = None
+        self._config_variables = []
+        self._account_config = dict()
+
+    @abstractmethod
+    def connect(self, restart_engine=False, **kwargs):
+        pass
+
+    @property
+    @abstractmethod
+    def input_configs(self):
+        """List of variables to configure for snowflake connection"""
+        return []
+
+    def load_table(
+        self,
+        sql_query=None,
+        source_database=SOURCE_DATABASE,
+        source_schema=SOURCE_SCHEMA,
+        source_table=SOURCE_TABLE,
+    ):
+        if sql_query is None:
+            sql_query = f"""
+                select * from {source_database}.{source_schema}.{source_table}
+                """
+        df = pd.read_sql(sql_query, self.connection)
+        st.session_state["fetch_from_snowflake_button"] = False
+        return df
+
+    def close_connection(self):
+        if hasattr(self, "connection"):
+            self.connection.close()
+
+
+class SnowflakeIndividualCredentials(SnowflakeConnection):
+    def connect(
+        self,
+        restart_engine=False,
+    ):
+        engine_kwargs = self._account_config
+        if self.engine is None or self.connection is None or restart_engine:
+            self.engine = create_engine(URL(**engine_kwargs))
+            self.connection = self.engine.connect()
+        return self.connection
+
+    @property
+    def input_configs(self):
+        self.config_variables = [
+            "user",
+            "account",
+            "region",
+            "authenticator",
+            "database",
+            "warehouse",
+        ]
+        return self.config_variables
+
+    @property
+    def account_config(self):
+        return self._account_config
+
+    @account_config.setter
+    def account_config(self, value):
+        # for config_variable in value.keys():
+        #     assert config_variable in self._config_variables
+        self._account_config = value
+
+    def dispose_engine(self):
+        if hasattr(self, "engine"):
+            self.engine.dispose()
 
 
 def fetch_data_from_table_name(warehouse: str, schema: str, table: str):
@@ -72,7 +153,7 @@ def exp_config_to_json():
     return config_json
 
 
-def initalise_session_states():
+def initalise_session_states(additional_params: Optional[Dict] = dict()):
     STATE_VARS = {
         "last_page": "Main",
         "output_loaded": None,
@@ -96,6 +177,9 @@ def initalise_session_states():
         "timestamp_temp": None,
         "ed": None,
         "data_loader": PullAndMatchData(),
+        "snowflake_connection": None,
+        "fetch_from_snowflake_button": False,
+        "df_temp": None,
         "is_defined_data_model": False,
         "evaluate_CUPED": False,
         "exp_design_alpha": 5,
@@ -121,6 +205,10 @@ def initalise_session_states():
         "bayes_rope_lower": -1.0,
     }
     for k, v in STATE_VARS.items():
+        if k not in st.session_state:
+            st.session_state[k] = v
+
+    for k, v in additional_params.items():
         if k not in st.session_state:
             st.session_state[k] = v
 

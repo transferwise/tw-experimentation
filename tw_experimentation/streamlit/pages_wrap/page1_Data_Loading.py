@@ -1,21 +1,21 @@
-import copy
-import json
-
 import streamlit as st
-
 from tw_experimentation.streamlit.streamlit_utils import (
-    cols_to_select,
-    exp_config_to_json,
-    generate_experiment_output,
-    initalise_session_states,
     load_data,
+    initalise_session_states,
     reset_exp_variables,
     swap_checkbox_state,
+    cols_to_select,
+    exp_config_to_json,
+    SnowflakeIndividualCredentials,
 )
+from tw_experimentation.streamlit.streamlit_utils import generate_experiment_output
 from tw_experimentation.utils import ExperimentDataset
+import json
+
+import copy
 
 
-def page_1_data_loading():
+def page_1_data_loading(snowflake_connector=SnowflakeIndividualCredentials()):
     st.session_state.update(st.session_state)
 
     DATA_PAGE = "Data Loading"
@@ -26,6 +26,8 @@ def page_1_data_loading():
 
     st.session_state["last_page"] = DATA_PAGE
 
+    if st.session_state["snowflake_connection"] is None:
+        st.session_state["snowflake_connection"] = snowflake_connector
     st.header("Data import")
     st.write(
         "If you simply want to use the sample size calculator without any dataset, "
@@ -41,7 +43,7 @@ def page_1_data_loading():
 
         if file is not None:
             df = load_data(file)
-            st.session_state["data_loader"].df = df
+            st.session_state["df_temp"] = df
             st.write("File uploaded")
 
     if load_type == "Snowflake query":
@@ -50,12 +52,6 @@ def page_1_data_loading():
 
         if snowflake_import == "query":
             st.text_input("SQL query", key="query")
-
-            snowflake_pull_kwargs = {
-                "sql_query": st.session_state["query"],
-                "user": st.session_state["snowflake_username"],
-                "restart_engine": restart_snowflake,
-            }
 
         if snowflake_import == "table name":
             col11, col12, col13 = st.columns(3)
@@ -72,33 +68,79 @@ def page_1_data_loading():
                 )
             with col13:
                 st.text_input("Table", key="table")
-            snowflake_pull_kwargs = dict(
-                source_database=st.session_state["warehouse"],
-                source_schema=st.session_state["schema"],
-                source_table=st.session_state["table"],
-                user=st.session_state["snowflake_username"],
-                restart_engine=restart_snowflake,
-            )
 
-        enter_username = False
+        enter_credentials = False
         if not st.session_state.has_snowflake_connection:
-            enter_username = True
+            enter_credentials = True
         else:
             restart_snowflake = st.checkbox("Restart snowflake connection")
 
-        st.session_state["snowflake_username"] = st.text_input(
-            "Snowflake username",
-            st.session_state["snowflake_username"],
-            disabled=not (enter_username or restart_snowflake),
-        )
+        if len(st.session_state["snowflake_connection"].input_configs) > 0:
+            with st.expander("Load snowflake configuration from json"):
+                st.write(
+                    """
+                        You can load a snowflake configuration from a json file.
+                        """
+                )
+                st.write(
+                    """
+                    You can upload a json file of the format, e.g.,
+                    {
+                        "user" = "USERNAME",
+                        "region" = "REGION"
+                    }
+                    """
+                )
+                config_json_snowflake = st.file_uploader(
+                    "Upload a json config file for snowflake", type="json"
+                )
 
-        if st.button("Fetch data from snowflake"):
-            st.session_state["data_loader"].pull_snowflake_table(
-                **snowflake_pull_kwargs
+                if config_json_snowflake is not None:
+                    try:
+                        json_content_snowflake = config_json_snowflake.getvalue()
+                        exp_config = json.loads(json_content_snowflake)
+                        st.write(exp_config)
+                        for config, value in exp_config.items():
+                            st.session_state["snowflake_" + config] = value
+                    except json.JSONDecodeError:
+                        st.error("Invalid JSON file. Please upload a valid JSON file.")
+        for config_variable in st.session_state["snowflake_connection"].input_configs:
+            initalise_session_states({"snowflake_" + config_variable: ""})
+            st.text_input(
+                config_variable,
+                st.session_state["snowflake_" + config_variable],
+                disabled=not (enter_credentials or restart_snowflake),
             )
+        if not st.session_state["fetch_from_snowflake_button"]:
+            if st.button("Fetch data from snowflake"):
+                st.session_state["fetch_from_snowflake_button"] = True
+        if st.session_state["fetch_from_snowflake_button"]:
+            account_configs = {
+                config_variable: st.session_state["snowflake_" + config_variable]
+                for config_variable in st.session_state[
+                    "snowflake_connection"
+                ].input_configs
+            }
+            st.session_state["snowflake_connection"].account_config = account_configs
+            st.session_state["snowflake_connection"].connect(
+                restart_engine=restart_snowflake
+            )
+            if snowflake_import == "query":
+                st.session_state["df_temp"] = st.session_state[
+                    "snowflake_connection"
+                ].load_table(sql_query=st.session_state["query"])
+            elif snowflake_import == "table name":
+                st.session_state["df_temp"] = st.session_state[
+                    "snowflake_connection"
+                ].load_table(
+                    source_database=st.session_state["warehouse"],
+                    source_schema=st.session_state["schema"],
+                    source_table=st.session_state["table"],
+                )
             st.session_state.has_snowflake_connection = True
+            st.session_state["fetch_from_snowflake_button"] = False
 
-    if st.session_state["data_loader"].df is not None:
+    if st.session_state["df_temp"] is not None:
         st.divider()
         with st.expander("Load configuration from json"):
             st.write(
@@ -172,7 +214,7 @@ def page_1_data_loading():
             ]
         ]
         cols_for_selection = cols_to_select(
-            st.session_state["data_loader"].df.columns, cols_to_exclude
+            st.session_state["df_temp"].columns, cols_to_exclude
         )
 
         if st.session_state["is_experiment"]:
@@ -284,7 +326,7 @@ def page_1_data_loading():
                     len(st.session_state["pre_experiment"]) > 0
                 ), "Must specify at least one pre-experiment metric"
                 st.session_state.ed = ExperimentDataset(
-                    data=copy.deepcopy(st.session_state["data_loader"].df),
+                    data=copy.deepcopy(st.session_state["df_temp"]),
                     variant="",
                     targets="",
                     pre_experiment_cols=st.session_state["pre_experiment"],
@@ -295,7 +337,7 @@ def page_1_data_loading():
                 if not st.session_state["is_dynamic_experiment_temp"]:
                     st.session_state["timestamp"] = None
                 st.session_state.ed = ExperimentDataset(
-                    data=copy.deepcopy(st.session_state["data_loader"].df),
+                    data=copy.deepcopy(st.session_state["df_temp"]),
                     variant=st.session_state["variant"],
                     targets=st.session_state["outcomes"],
                     date=(
@@ -303,9 +345,9 @@ def page_1_data_loading():
                         if st.session_state["is_dynamic_experiment"]
                         else None
                     ),
-                    n_variants=st.session_state["data_loader"]
-                    .df[st.session_state["variant"]]
-                    .nunique(),
+                    n_variants=st.session_state["df_temp"][
+                        st.session_state["variant"]
+                    ].nunique(),
                     pre_experiment_cols=st.session_state["pre_experiment"],
                     segments=st.session_state["segments"],
                 )
@@ -329,7 +371,7 @@ def page_1_data_loading():
                         st.session_state["timestamp"] = None
                     st.cache_data.clear()
                     generate_experiment_output(
-                        copy.deepcopy(st.session_state["data_loader"].df),
+                        copy.deepcopy(st.session_state["df_temp"]),
                         variant=st.session_state["variant"],
                         targets=st.session_state["outcomes"],
                         date_created=(
