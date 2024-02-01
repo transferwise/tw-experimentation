@@ -320,8 +320,8 @@ class SampleSizeInterface:
 
 
 class DataWidget:
-    def __init__(self, df) -> None:
-        self.df = df
+    def __init__(self, experiment_data) -> None:
+        self.experiment_data = experiment_data
 
         title_wt = widgets.HTML(
             value=(
@@ -332,7 +332,7 @@ class DataWidget:
         display(title_wt)
 
         self.target_widget = widgets.SelectMultiple(
-            options=self.df.columns,
+            options=self.experiment_data.columns,
             description="Outcomes",
             style=dict(description_width="initial"),
         )
@@ -342,14 +342,14 @@ class DataWidget:
         self._date_label()
 
         self.pre_exp_cols = widgets.SelectMultiple(
-            options=self.df.columns,
+            options=self.experiment_data.columns,
             description="Pre-Experiment Columns",
             style=dict(description_width="initial"),
         )
         display(self.pre_exp_cols)
 
         self.mts = {}
-        for col in self.df.columns:
+        for col in self.experiment_data.columns:
             self.mts[col] = widgets.ToggleButtons(
                 options=METRIC_TYPE_OPTIONS,
                 description=f"Metric Type of {col}",
@@ -378,7 +378,7 @@ class DataWidget:
 
     def _variant_col_name(self):
         self.variant_col = widgets.Dropdown(
-            options=self.df.columns,
+            options=self.experiment_data.columns,
             description="Name of Column with Variants",
             style=dict(description_width="initial"),
         )
@@ -386,7 +386,7 @@ class DataWidget:
 
     def _date_label(self):
         self.timestamp_col = widgets.Dropdown(
-            options=self.df.columns,
+            options=self.experiment_data.columns,
             description="Name of Column with Timestamps",
             style=dict(description_width="initial"),
         )
@@ -394,12 +394,12 @@ class DataWidget:
 
     def _create_experiment_dataset(self, b):
         self.ed = ExperimentDataset(
-            data=self.df,
+            data=self.experiment_data,
             variant=self.variant_col.value,
             targets=self.target_widget.value,
             date=self.timestamp_col.value,
             pre_experiment_cols=self.pre_exp_cols.value,
-            n_variants=self.df[self.variant_col.value].nunique(),
+            n_variants=self.experiment_data[self.variant_col.value].nunique(),
             metric_types={
                 target: self.mts[target].value for target in self.target_widget.value
             },
