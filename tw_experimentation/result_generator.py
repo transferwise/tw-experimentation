@@ -1,23 +1,18 @@
-from tw_experimentation.utils import ExperimentDataset
+import pickle as pkl
+from typing import List, Optional
 
-
-from tw_experimentation.checker import (
-    Monitoring,
-    SegmentMonitoring,
-    SequentialTest,
-    NormalityChecks,
-)
-
-from tw_experimentation.statistical_tests import compute_frequentist_results, run_cuped
-from tw_experimentation.segmentation_frequentist import run_segmentation_analysis
-
+import pandas as pd
 
 from tw_experimentation.bayes.bayes_test import BayesTest
-
-
-from typing import List, Optional
-import pandas as pd
-import pickle as pkl
+from tw_experimentation.checker import (
+    Monitoring,
+    NormalityChecks,
+    SegmentMonitoring,
+    SequentialTest,
+)
+from tw_experimentation.segmentation_frequentist import run_segmentation_analysis
+from tw_experimentation.statistical_tests import compute_frequentist_results, run_cuped
+from tw_experimentation.utils import ExperimentDataset
 
 
 def generate_results(

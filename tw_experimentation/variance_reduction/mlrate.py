@@ -1,18 +1,17 @@
+from typing import List
+
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+from flaml import AutoML
+from sklearn.model_selection import StratifiedKFold
+from xgboost import XGBRegressor
+
+from tw_experimentation.variance_reduction.utils import split_dataframe
 from tw_experimentation.variance_reduction.variance_reduction_method import (
     VarianceReductionMethod,
 )
-from tw_experimentation.variance_reduction.utils import (
-    split_dataframe,
-)
-from typing import List
-
-import statsmodels.api as sm
-import statsmodels.formula.api as smf
-import pandas as pd
-import numpy as np
-from flaml import AutoML
-from xgboost import XGBRegressor
-from sklearn.model_selection import StratifiedKFold
 
 
 class MLRATE(VarianceReductionMethod):

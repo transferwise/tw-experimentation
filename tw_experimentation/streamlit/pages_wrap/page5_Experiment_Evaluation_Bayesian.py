@@ -1,9 +1,10 @@
+import plotly.graph_objects as go
+import streamlit as st
+
 from tw_experimentation.streamlit.streamlit_utils import (
     bayes_cache_wrapper,
     initalise_session_states,
 )
-import streamlit as st
-import plotly.graph_objects as go
 
 
 def page_5_experiment_evaluation_bayesian():

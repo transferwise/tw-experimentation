@@ -1,15 +1,15 @@
+import numpy as np
 import streamlit as st
+
 from tw_experimentation.streamlit.streamlit_utils import (
     _coming_from_other_page,
-    swap_evaluation_change_alpha,
-    initalise_session_states,
-    swap_checkbox_state,
-    frequentist_results,
     cuped_results,
+    frequentist_results,
+    initalise_session_states,
     segmentation_analysis,
+    swap_checkbox_state,
+    swap_evaluation_change_alpha,
 )
-
-import numpy as np
 from tw_experimentation.utils import highlight
 
 

@@ -1,9 +1,9 @@
+import numpy as np
 import pytest
 
-import numpy as np
-from tw_experimentation.utils import ExperimentDataset
 from tw_experimentation.bayes.bayes_test import BayesTest
 from tw_experimentation.data_generation import RevenueConversion
+from tw_experimentation.utils import ExperimentDataset
 
 
 @pytest.fixture

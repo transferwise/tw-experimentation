@@ -1,33 +1,28 @@
-import pandas as pd
-import numpy as np
-from scipy.stats import chi2_contingency
-import plotly.graph_objects as go
-
-from scipy.stats import shapiro
-from scipy.stats.contingency import expected_freq
-import statsmodels.api as sm
-from itertools import product
-
-from dataclasses import dataclass
-
-from typing import List, Dict, Union
 import copy
-from tw_experimentation.utils import (
-    variant_name_map,
-    ExperimentDataset,
-)
+from dataclasses import dataclass
+from itertools import product
+from typing import Dict, List, Union
+
+import numpy as np
+import pandas as pd
+import plotly.graph_objects as go
+import statsmodels.api as sm
+from scipy.stats import chi2_contingency, shapiro
+from scipy.stats.contingency import expected_freq
+
 from tw_experimentation.plotting.monitoring_plots import (
     fig_variant_segment_dependence,
-    plot_sample_size_pie,
     plot_dynamic_sample_size,
-    target_metric_distribution,
-    plot_target_metric_cdf,
-    plot_segment_sample_size,
-    plot_segment_histograms,
-    plot_sequential_test,
     plot_qq_normal,
     plot_qq_variants,
+    plot_sample_size_pie,
+    plot_segment_histograms,
+    plot_segment_sample_size,
+    plot_sequential_test,
+    plot_target_metric_cdf,
+    target_metric_distribution,
 )
+from tw_experimentation.utils import ExperimentDataset, variant_name_map
 
 
 @dataclass

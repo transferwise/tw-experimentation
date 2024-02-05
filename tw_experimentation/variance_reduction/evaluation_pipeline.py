@@ -1,17 +1,17 @@
+import copy
+from typing import List
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from tqdm import tqdm
+from typing_extensions import Self
+
+from tw_experimentation.variance_reduction.utils import subsample_data
 from tw_experimentation.variance_reduction.variance_reduction_method import (
     VarianceReductionMethod,
 )
-from tw_experimentation.variance_reduction.utils import (
-    subsample_data,
-)
-import pandas as pd
-from typing import List
-from typing_extensions import Self
-import numpy as np
-import seaborn as sns
-from tqdm import tqdm
-import matplotlib.pyplot as plt
-import copy
 
 
 class VREvaluation:

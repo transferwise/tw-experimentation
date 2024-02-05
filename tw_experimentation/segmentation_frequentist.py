@@ -1,22 +1,21 @@
-from tw_experimentation.utils import ExperimentDataset, highlight
+import copy
+import json
+import warnings
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Union
+
+import pandas as pd
+import plotly.graph_objects as go
+from IPython.display import display
+from wise_pizza import explain_levels
+from wise_pizza.plotting import plot_segments
+
 from tw_experimentation.statistical_tests import (
     FrequentistTest,
     FrequentistTestResults,
     compute_frequentist_results,
 )
-from typing import List, Optional, Dict, Union
-from dataclasses import dataclass
-
-import warnings
-import copy
-
-import pandas as pd
-import json
-
-from wise_pizza import explain_levels
-from wise_pizza.plotting import plot_segments
-import plotly.graph_objects as go
-from IPython.display import display
+from tw_experimentation.utils import ExperimentDataset, highlight
 
 
 @dataclass

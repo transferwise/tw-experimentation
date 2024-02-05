@@ -1,12 +1,16 @@
+from typing import List
+
+import pandas as pd
+import statsmodels.api as sm
+
 from tw_experimentation.variance_reduction.variance_reduction_method import (
     VarianceReductionMethod,
 )
-from typing import List
-import statsmodels.api as sm
-import pandas as pd
 
 
 class MultivariateRegression(VarianceReductionMethod):
+    """Multivariate regression variance reduction method."""
+
     def fit(
         self,
         data: pd.DataFrame,
@@ -34,13 +38,13 @@ class MultivariateRegression(VarianceReductionMethod):
         treatment = data[treatment_column]
 
         # merge together treatment and covariates
-        X = covariates.assign(T=treatment)
+        X_data = covariates.assign(T=treatment)
 
         # rename column T
-        X = X.rename(columns={"T": treatment_column})
+        X_data = X_data.rename(columns={"T": treatment_column})
 
         # fit multivariate regression
-        self.regression_results = sm.OLS(target, sm.add_constant(X)).fit()
+        self.regression_results = sm.OLS(target, sm.add_constant(X_data)).fit()
 
         # fit baseline
         self.fit_baseline(
@@ -107,7 +111,6 @@ class MultivariateRegressionAdjusted(VarianceReductionMethod):
         treatment_column: str,
         target_column: str,
         covariate_columns: List[str],
-        **kwargs,
     ):
         """Apply Multivariate Regression to data.
 
@@ -128,27 +131,27 @@ class MultivariateRegressionAdjusted(VarianceReductionMethod):
         treatment = data[treatment_column]
 
         # prepare adjustment
-        X = covariates.copy()
+        X_data = covariates.copy()
         # for col in covariate_columns:
-        #     X[col+'_tilde'] = treatment * (X[col] - X[col].mean())
+        #     X_data[col+'_tilde'] = treatment * (X_data[col] - X_data[col].mean())
 
-        X = pd.concat(
-            [X]
+        X_data = pd.concat(
+            [X_data]
             + [
-                (treatment * (X[col] - X[col].mean())).rename(col + "_tilde")
+                (treatment * (X_data[col] - X_data[col].mean())).rename(col + "_tilde")
                 for col in covariate_columns
             ],
             axis=1,
         )
 
         # merge together treatment and covariates
-        X = X.assign(T=treatment)
+        X_data = X_data.assign(T=treatment)
 
         # rename column T
-        X = X.rename(columns={"T": treatment_column})
+        X_data = X_data.rename(columns={"T": treatment_column})
 
         # fit multivariate regression
-        self.regression_results = sm.OLS(target, sm.add_constant(X)).fit()
+        self.regression_results = sm.OLS(target, sm.add_constant(X_data)).fit()
 
         # fit baseline
         self.fit_baseline(

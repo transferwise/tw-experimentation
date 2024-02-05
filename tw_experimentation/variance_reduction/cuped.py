@@ -1,10 +1,12 @@
+from typing import List
+
 import numpy as np
-import statsmodels.api as sm
 import pandas as pd
+import statsmodels.api as sm
+
 from tw_experimentation.variance_reduction.variance_reduction_method import (
     VarianceReductionMethod,
 )
-from typing import List
 
 
 class CUPED(VarianceReductionMethod):

@@ -1,7 +1,8 @@
+import pandas as pd
+
 from tw_experimentation.variance_reduction.variance_reduction_method import (
     VarianceReductionMethod,
 )
-import pandas as pd
 
 
 class DifferenceInMeans(VarianceReductionMethod):

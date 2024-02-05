@@ -1,11 +1,10 @@
+import datetime
+from dataclasses import dataclass
+from random import randint
+
 import numpy as np
 import pandas as pd
-
-
 from numpy import random
-from dataclasses import dataclass
-import datetime
-from random import randint
 
 
 @dataclass

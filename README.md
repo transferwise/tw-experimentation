@@ -1,7 +1,7 @@
 # TW Experimentation: A library for automated A/B testing
 
 
-**TW Experimentation** is a library to design experiments, check data, run statistical tests and make decisions 
+**TW Experimentation** is a library to design experiments, check data, run statistical tests and make decisions
 
 <summary><strong><em>Table of Contents</em></strong></summary>
 
@@ -67,14 +67,14 @@ For running streamlit app please just open the terminal and run:
 run_tw_experimentation_streamlit
 ```
 
-2. You can install the package  via the dependency manager poetry after cloning/git pull/download it as a zip from this repository. 
+2. You can install the package  via the dependency manager poetry after cloning/git pull/download it as a zip from this repository.
 
 To do so, clone the repository by running
 ```
 git clone git@github.com:transferwise/tw-experimentation.git
 ```
 from terminal.
-To set up poetry, run 
+To set up poetry, run
 ```
 make set-up-poetry-mac
 ```
@@ -82,12 +82,12 @@ for mac (or linux) and
 ```
 make set-up-poetry-windows
 ```
-for windows. 
-Then, run 
+for windows.
+Then, run
 ```
 make run-streamlit-poetry
-``` 
-from the root of the package folder. 
+```
+from the root of the package folder.
 
 3. **Alernative:** TW Experimentation requires the following libraries to work which you can find in the .yml file. To install requirements please make sure you have installed the package manager Anaconda and then run the following commands in the terminal:
 
@@ -112,8 +112,8 @@ conda install -c conda-forge jax
 
 Make sure you have followed the installation instructions.
 
-### Notebooks 
-You can use the jupyter notebooks `1_pre_experiment.ipynb` or `2_integrity_checks + evaluation.ipynb` for experiments design and evaluation. 
+### Notebooks
+You can use the jupyter notebooks `1_pre_experiment.ipynb` or `2_integrity_checks + evaluation.ipynb` for experiments design and evaluation.
 The tw experimentation package can be used for different things, for example for analyzing results:
 
 ```Python
@@ -148,7 +148,7 @@ run_tw_experimentation_streamlit
 
 Or:
 
-Open terminal and navigate to the repository. 
+Open terminal and navigate to the repository.
 Then navigate to the folder `./tw_experimentation/streamlit`.
 
 Now run the command `streamlit run Main.py` and the app should open in your browser.

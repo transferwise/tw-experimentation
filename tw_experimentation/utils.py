@@ -1,24 +1,25 @@
 import os
 from dataclasses import dataclass
-from typing import List, Union, Optional
-import pandas as pd
-import numpy as np
-from numpy.distutils.misc_util import is_sequence
 from itertools import repeat
+from typing import List, Optional, Union
+
+import numpy as np
+import pandas as pd
+from numpy.distutils.misc_util import is_sequence
 
 from tw_experimentation.constants import PLOTLY_COLOR_PALETTE, MetricType
 
 
-def highlight(df):
+def highlight(result_df):
     """Highlight significant results in green, non-significant in red for frequentist
     stat table."""
-    if df["is_significant"]:
-        if df["Estimated_Effect_relative"] > 0:
-            return ["background-color: lightgreen"] * len(df)
+    if result_df["is_significant"]:
+        if result_df["Estimated_Effect_relative"] > 0:
+            return ["background-color: lightgreen"] * len(result_df)
         else:
-            return ["background-color: lightcoral"] * len(df)
+            return ["background-color: lightcoral"] * len(result_df)
     else:
-        return [""] * len(df)
+        return [""] * len(result_df)
 
 
 def hex_to_rgb(hex_color: str) -> tuple:
@@ -70,6 +71,11 @@ def variantname_color_map(variant_names: List[str]):
 
 
 def create_dir(loc: str):
+    """Create dictionary if it does not exist.
+
+    Args:
+        loc (str): Path to directory to be created.
+    """
     parent = os.path.realpath(os.path.join(loc, ".."))
     if os.path.isdir(parent):
         if not os.path.isdir(loc):
@@ -82,6 +88,34 @@ def create_dir(loc: str):
 
 @dataclass
 class ExperimentMetaData:
+    """
+    Represents the metadata for an experiment.
+
+    Attributes:
+        variant (str): The variant of the experiment.
+        targets (List[str]): The list of target variables.
+        n_variants (int): The number of variants in the experiment.
+        date (Optional[str]): The date of the experiment (optional).
+        pre_experiment_cols (Optional[List[str]]): The list of
+            pre-experiment columns (optional).
+        segments (Optional[List[str]]): The list of segments (optional).
+        metric_types (Optional[dict[str, str]]): The dictionary of
+            metric types (optional).
+        is_dynamic_observation (Optional[bool]): Indicates if the experiment
+            has dynamic observation (optional).
+        is_only_pre_experiment (Optional[bool]): Indicates if the experiment
+            is only pre-experiment (optional).
+        variant_labels (Optional[List[str]]): The list of variant labels
+            (optional).
+        variant_names (Optional[List[str]]): The list of variant names
+            (optional).
+        sample_sizes (Optional[dict[str, int]]): The dictionary of
+            sample sizes (optional).
+        total_sample_size (Optional[int]): The total sample size (optional).
+        target_standard_deviations (Optional[dict[str, float]]): The dictionary
+            of target standard deviations (optional).
+    """
+
     variant: str
     targets: List[str]
     n_variants: int
@@ -100,6 +134,66 @@ class ExperimentMetaData:
 
 @dataclass
 class ExperimentDataset:
+    """Class for implementing data logic for A/B testing.
+
+    Args:
+        data (pd.DataFrame): Data with columns variant, target, date.
+        variant (str): Variant column name.
+        targets (Union[str, List[str]]): Target column name(s).
+        pre_experiment_cols (Optional[List[str]], optional):
+            Pre-experimental data columns. Defaults to None.
+        segments (Optional[List[str]], optional): Segments column names.
+            Defaults to None.
+        metric_types (Optional[dict[str, str]], optional):
+            Metric types ('binary', 'discrete', or 'continuous').
+                Defaults to None.
+        date (Optional[str], optional): Timestamp column. Defaults to None.
+        ratio_targets (Optional[dict[str, tuple]], optional):
+            Ratio targets with numerator and denominator in tuple.
+            Not implemented yet. Defaults to None.
+        n_variants (Optional[int], optional): Number of variants.
+            TODO: autodetect this. Defaults to 2.
+        control_label (Optional[str], optional): Label of the control
+            group variant.
+            Defaults to 0.
+        is_dynamic_observation (Optional[bool], optional):
+            Whether the assignment are dynamic
+            (for monitoring and sequential analysis). Defaults to True.
+        is_only_pre_experiment (Optional[bool], optional):
+            Whether it only uses pre-experimental data.
+
+    Attributes:
+        data (pd.DataFrame): Data with columns variant, target, date.
+        variant (str): Variant column name.
+        targets (List[str]): Target column name(s).
+        pre_experiment_cols (List[str]): Pre-experimental data columns.
+        segments (List[str]): Segments column names.
+        metric_types (dict[str, str]): Metric types
+            ('binary', 'discrete', or 'continuous').
+        date (str): Timestamp column.
+        ratio_targets (dict[str, tuple]): Ratio targets with numerator and
+            denominator in tuple.
+        n_variants (int): Number of variants.
+        control_label (str): Label of the control group variant.
+        is_dynamic_observation (bool): Whether the assignment are dynamic
+            (for monitoring and sequential analysis).
+        is_only_pre_experiment (bool): Whether it only uses
+            pre-experimental data.
+        is_preprocessed (bool): Whether the dataset has been preprocessed.
+
+    Raises:
+        AssertionError: If the input data is not of type pd.DataFrame.
+        AssertionError: If the variant is not of type str.
+        AssertionError: If the targets are not a sequence.
+        AssertionError: If the variant column is not present in the data.
+        AssertionError: If the targets columns are not present in the data.
+        AssertionError: If the pre-experiment columns are not present in the data.
+        AssertionError: If the date column is not present in the data.
+        AssertionError: If the metric types are not one of
+            'binary', 'discrete', or 'continuous'.
+
+    """
+
     data: pd.DataFrame
     variant: str
     targets: List[str]
@@ -316,7 +410,7 @@ class ExperimentDataset:
                             self.metric_types[metric] = MetricType.DISCRETE.value
                     else:
                         self.metric_types[metric] = MetricType.CONTINUOUS.value
-                except Exception as TypeError:  # noqaF841
+                except TypeError:  # noqaF841
                     print(error_msg)
             else:
                 raise TypeError(error_msg)

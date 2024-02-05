@@ -1,10 +1,9 @@
-import numpy as np
-import pandas as pd
-
-
-from numpy import random
 import datetime
 from random import randint
+
+import numpy as np
+import pandas as pd
+from numpy import random
 
 
 def revenue_conversion_data(

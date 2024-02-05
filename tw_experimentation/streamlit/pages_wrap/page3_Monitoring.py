@@ -1,12 +1,12 @@
 import streamlit as st
 
 from tw_experimentation.streamlit.streamlit_utils import (
+    initalise_session_states,
     monitoring,
+    normality_check,
     segment_monitoring,
     sequential_testing,
-    initalise_session_states,
     swap_checkbox_state,
-    normality_check,
 )
 
 

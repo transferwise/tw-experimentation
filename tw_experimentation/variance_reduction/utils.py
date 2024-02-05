@@ -1,9 +1,10 @@
+from typing import Generator, List
+
+import numpy as np
+import pandas as pd
+from prettytable import PrettyTable
 from snowflake.sqlalchemy import URL
 from sqlalchemy import create_engine
-from prettytable import PrettyTable
-import pandas as pd
-import numpy as np
-from typing import List, Generator
 
 
 def create_pretty_table(

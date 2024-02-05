@@ -1,14 +1,14 @@
 from numpyro.distributions import (
-    ZeroInflatedPoisson,
     BernoulliProbs,
-    LogNormal,
-    Gamma,
-    Uniform,
     Beta,
+    Gamma,
+    LogNormal,
     Normal,
+    Uniform,
+    ZeroInflatedPoisson,
 )
-from tw_experimentation.constants import MetricType
 
+from tw_experimentation.constants import MetricType
 
 # AVAILABLE_LIKELIHOOD_MODELS = {
 #     "binary": [Bernoulli],
@@ -90,9 +90,10 @@ class ZeroInflatedPoissonLikelihood(ZeroInflatedPoisson):
     @property
     def aux_dist(self):
         if not self.auxiliary_zero_inflation:
-            return None
+            auxdist = None
         else:
-            return Uniform
+            auxdist = Uniform
+        return auxdist
 
 
 DEFAULT_LIKELIHOOD_MODELS = {

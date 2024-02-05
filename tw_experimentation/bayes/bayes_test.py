@@ -1,28 +1,23 @@
-from tw_experimentation.utils import ExperimentDataset, variant_color_map, hex_to_rgb
-from tw_experimentation.statistical_tests import BaseTest
-from tw_experimentation.bayes.bayes_model import BayesModel
+"""Bayesian A/B testing module."""
+
+from dataclasses import dataclass
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 import plotly.express as px
-
-
-from typing import List, Union, Optional, Tuple
-from numpy.random import binomial, poisson, lognormal
+import plotly.figure_factory as ff
+import plotly.graph_objects as go
+from jax import random as rd
+from numpy.random import binomial, lognormal, poisson
+from numpyro.diagnostics import hpdi
+from numpyro.infer import MCMC, NUTS, init_to_feasible
+from plotly.subplots import make_subplots
 from scipy.stats import gaussian_kde
 
-import plotly.graph_objects as go
-import plotly.figure_factory as ff
-from plotly.subplots import make_subplots
-
-
-from numpyro.diagnostics import hpdi
-
-from jax import random as rd
-from numpyro.infer import MCMC, NUTS, init_to_feasible
-
-from dataclasses import dataclass
-
+from tw_experimentation.bayes.bayes_model import BayesModel
+from tw_experimentation.statistical_tests import BaseTest
+from tw_experimentation.utils import ExperimentDataset, hex_to_rgb, variant_color_map
 
 NUM_SAMPLES_MIN = 5000
 NUM_SAMPLES_MAX = 15000
@@ -48,6 +43,16 @@ class BayesResult:
     prior_means: Union[None, dict[str, dict[str, np.ndarray]]]
 
     def bayes_factor(self, target: str, treatment: int):
+        """
+        Calculates the Bayes factor for a given target and treatment.
+
+        Parameters:
+            target (str): The target variable.
+            treatment (int): The treatment index.
+
+        Returns:
+            float: The calculated Bayes factor.
+        """
         assert isinstance(treatment, int) and treatment in range(1, self.n_variants)
 
         # Drop inf values from prior dist which strangely appear sometimes
@@ -65,6 +70,20 @@ class BayesResult:
         return bayes_factor[0]
 
     def false_discovery_rate(self, target: str, treatment: int):
+        """
+        Calculates the false discovery rate (FDR) for a given target and treatment.
+
+        Parameters:
+        target (str): The target variable.
+        treatment (int): The treatment number.
+
+        Returns:
+        float: The false discovery rate.
+
+        Raises:
+        AssertionError: If the treatment is not an integer or is not within the
+        range of 1 to the number of variants.
+        """
         assert isinstance(treatment, int) and treatment in range(1, self.n_variants)
 
         bayes_factor = self.bayes_factor(target, treatment)
@@ -74,12 +93,26 @@ class BayesResult:
     def bayes_factor_decision(
         self, target: str, treatment: int, false_disc_threshold=0.01
     ):
+        """
+        Determines the decision based on the Bayes factor.
+
+        Args:
+            target (str): The target variable.
+            treatment (int): The treatment variable.
+            false_disc_threshold (float, optional): The threshold for the
+                false discovery rate. Defaults to 0.01.
+
+        Returns:
+            str: The decision based on the Bayes factor. Either "accept null" or
+                "reject null".
+        """
         fdr = self.false_discovery_rate(target, treatment)
 
         if fdr > false_disc_threshold:
-            return "accept null"
+            message = "accept null"
         else:
-            return "reject null"
+            message = "reject null"
+        return message
 
     def prob_greater_than_zero(self, target: str):
         """Compute the probability that the average treatment effect is greater than
@@ -262,7 +295,7 @@ class BayesResult:
 
         fig.for_each_trace(
             lambda trace: trace.update(
-                marker=dict(color=color_per_variant[int(trace.name)]),
+                marker={"color": color_per_variant[int(trace.name)]},
                 name=self.variant_labels[int(trace.name)],
             )
         )
@@ -288,21 +321,20 @@ class BayesResult:
                     y=[self.variant_labels[k]] * 2,
                     mode="lines",
                     showlegend=False,
-                    line=dict(color=color_per_variant[k], width=10),
+                    line={"color": color_per_variant[k], "width": 10},
                 ),
                 row=2,
                 col=1,
             )
         return fig
 
-    def fig_posterior_by_target(self, target: str, distribution_opacity: float = 0.3):
+    def fig_posterior_by_target(self, target: str):
         """Plot the posterior distribution and the high density interval (HDI) of the
         expected value.
 
         Args:
             target (str): target metric
-            distribution_opacity (float): opacity of the distribution plot shades.
-                Defaults to 0.3.
+
         Returns:
             plotly figure
         """
@@ -319,16 +351,12 @@ class BayesResult:
         )
         return fig
 
-    def fig_posterior_cdf_by_target(
-        self, target: str, distribution_opacity: float = 0.3, facet_rows_variant=False
-    ):
+    def fig_posterior_cdf_by_target(self, target: str, facet_rows_variant=False):
         """Generates a plot of the empirical cumulative distribution (ECDF) function of
         treatment effect for a given target.
 
         Args:
             target (str): The target for which to generate the plot.
-            distribution_opacity (float, optional): The opacity of the distribution
-                plot. Defaults to 0.3.
             facet_rows_variant (bool, optional): Whether to facet the plot by variant.
                 Defaults to False.
 
@@ -351,16 +379,12 @@ class BayesResult:
         )
         return fig
 
-    def fig_posterior_difference_by_target(
-        self, target: str, distribution_opacity: float = 0.3
-    ):
+    def fig_posterior_difference_by_target(self, target: str):
         """Plot the posterior distribution and the high density interval (HDI) of the
         expected treatment effect.
 
         Args:
             target (str): target metric
-            distribution_opacity (float): opacity of the distribution plot shades.
-                Defaults to 0.3.
         Returns:
             plotly figure
         """
@@ -380,7 +404,6 @@ class BayesResult:
     def fig_posterior_difference_cdf(
         self,
         sample_per_variant: dict,
-        distribution_opacity: float = 0.3,
         facet_rows_variant: bool = False,
         shade_areas: bool = True,
         shade_limits: Tuple[Union[float, None], Union[float, None]] = (None, None),
@@ -392,8 +415,6 @@ class BayesResult:
         Args:
             sample_per_variant (dict): A dictionary mapping variant names to lists
                 of samples.
-            distribution_opacity (float, optional): The opacity of any shaded area.
-                Defaults to 0.3.
             facet_rows_variant (bool, optional): Whether to facet the plot by variant.
                 Defaults to False.
             shade_areas (bool, optional): Whether to shade an area. Not implemented yet
@@ -407,10 +428,12 @@ class BayesResult:
         """
 
         # TODO: Implement shading of areas with shade_areas and shade_limits
-        VARIANT = "Variant"
-        VALUE = "Value"
+        _ = shade_areas
+        _ = shade_limits
+        variant_name = "Variant"
+        value_name = "Value"
         data_list = [
-            {VARIANT: variant, VALUE: value}
+            {variant_name: variant, value_name: value}
             for variant, values in sample_per_variant.items()
             for value in values
         ]
@@ -445,10 +468,49 @@ class BayesResult:
 
 
 class BayesTest(BaseTest):
+    """Class to perform Bayesian A/B testing."""
+
     def __init__(
         self,
         ed: ExperimentDataset,
     ):
+        """
+        Initializes a BayesianTest object.
+
+        Args:
+            ed (ExperimentDataset): The ExperimentDataset object containing the data
+                for the experiment.
+
+        Attributes:
+            sampler (dict): Dictionary to store the sampler object.
+            posterior_samples (dict): Dictionary to store the posterior
+                samples.
+            posterior_samples_difference (dict): Dictionary to store the
+                posterior samples difference.
+            posterior_ate (dict): Dictionary to store the posterior
+                average treatment effect.
+            posterior_means (dict): Dictionary to store the posterior means.
+            posterior_hdi (dict): Dictionary to store the posterior
+                highest density interval.
+            posterior_difference_hdi (dict): Dictionary to store the
+                posterior difference highest density interval.
+            prior_samples (dict): Dictionary to store the prior samples.
+            prior_samples_difference (dict): Dictionary to store the prior
+                samples difference.
+            prior_ate (dict): Dictionary to store the prior average treatment
+                effect.
+            prior_means (dict): Dictionary to store the prior means.
+            post_pred (dict): Dictionary to store the posterior predictive samples.
+            post_pred_diff (dict): Dictionary to store the posterior predictive
+                samples difference.
+            post_pred_mean_distribution (dict): Dictionary to store the posterior
+                predictive mean distribution.
+            post_pred_mean_distribution_diff (dict): Dictionary to store the
+                posterior predictive mean distribution difference.
+            hdi (float): The highest density interval.
+            num_samples (int): The number of samples to be used in the analysis.
+
+        """
         super().__init__(ed)
 
         self.sampler = {}
@@ -481,6 +543,21 @@ class BayesTest(BaseTest):
         prior_models: List,
         params_models: List[dict],
     ):
+        """
+        Sets the likelihood model, variables, prior models, and parameters models for a
+            given target.
+
+        Args:
+            target (str): The target for which the models are being set.
+            likelihood_model: The likelihood model for the target.
+            variables (List[str]): The list of variables for the target.
+            prior_models (List): The list of prior models for the variables.
+            params_models (List[dict]): The list of parameter models for the variables.
+
+        Returns:
+            None
+        """
+
         self.likelihood_model_per_target[target] = likelihood_model
 
         self.variables_per_target[target] = variables
@@ -536,6 +613,21 @@ class BayesTest(BaseTest):
         self.params_models_per_target = {}
 
     def _setup_bayesmodel(self, target, fit_model=True):
+        """
+        Set up a BayesModel object for the given target variable.
+
+        Args:
+            target (str): The name of the target variable.
+            fit_model (bool, optional): Whether to perform
+                Bayesian updating. Defaults to True.
+
+        Returns:
+            BayesModel: The initialized BayesModel object.
+
+        Raises:
+            None
+
+        """
         bm = BayesModel(
             metric_type=self.ed.metric_types[target],
             observations=self.ed.data.groupby(self.ed.variant)[target],
@@ -614,9 +706,16 @@ class BayesTest(BaseTest):
         )
 
     def get_summary(self, target):
+        """Summarize the Bayes model for a given target."""
         self.sampler[target].print_summary(exclude_deterministic=False)
 
     def compute_bayes_factor(self):
+        """
+        Computes the Bayes factor for each target in the experiment.
+
+        Returns:
+            None
+        """
         # https://arxiv.org/abs/1602.05549
         for target in self.ed.targets:
             bm = self._setup_bayesmodel(target, fit_model=False)
@@ -641,7 +740,7 @@ class BayesTest(BaseTest):
     def _compute_posterior_predictive(self):
         """Compute posterior predictive distribution from posterior samples only
         possible after model fit."""
-        N_SAMPLES_POST_PRED = 100000
+        n_samples_post_pred = 100000
         for target in self.ed.targets:
             self.post_pred[target] = {}
             for k in range(self.ed.n_variants):
@@ -650,7 +749,7 @@ class BayesTest(BaseTest):
                         1,
                         np.random.choice(
                             self.posterior_samples[target]["probs"][k],
-                            size=(N_SAMPLES_POST_PRED,),
+                            size=(n_samples_post_pred,),
                         ),
                     )
                 elif self.ed.metric_types[target] == "discrete":
@@ -659,12 +758,12 @@ class BayesTest(BaseTest):
                         1
                         - np.random.choice(
                             self.posterior_samples[target]["gate"][k],
-                            size=(N_SAMPLES_POST_PRED,),
+                            size=(n_samples_post_pred,),
                         ),
                     ) * poisson(
                         lam=np.random.choice(
                             self.posterior_samples[target]["rate"][k],
-                            size=(N_SAMPLES_POST_PRED,),
+                            size=(n_samples_post_pred,),
                         ),
                     )
                 elif self.ed.metric_types[target] == "continuous":
@@ -673,16 +772,16 @@ class BayesTest(BaseTest):
                         1
                         - np.random.choice(
                             self.posterior_samples[target]["gate"][k],
-                            size=(N_SAMPLES_POST_PRED,),
+                            size=(n_samples_post_pred,),
                         ),
                     ) * lognormal(
                         mean=np.random.choice(
                             self.posterior_samples[target]["loc"][k],
-                            size=(N_SAMPLES_POST_PRED,),
+                            size=(n_samples_post_pred,),
                         ),
                         sigma=np.random.choice(
                             self.posterior_samples[target]["scale"][k],
-                            size=(N_SAMPLES_POST_PRED,),
+                            size=(n_samples_post_pred,),
                         ),
                     )
 
@@ -693,8 +792,8 @@ class BayesTest(BaseTest):
                 )
 
     def compute_posterior_predictive_mean(self):
-        N_SAMPLES_POST_PRED = 2000
-        N_SAMPLE_MEANS = 200
+        n_samples_post_pred = 2000
+        n_sample_means = 200
         for target in self.ed.targets:
             self.post_pred_mean_distribution[target] = {}
             for k in range(self.ed.n_variants):
@@ -705,10 +804,10 @@ class BayesTest(BaseTest):
                                 1,
                                 np.random.choice(
                                     self.posterior_samples[target]["probs"][k],
-                                    size=(N_SAMPLES_POST_PRED,),
+                                    size=(n_samples_post_pred,),
                                 ),
                             ).mean()
-                            for _ in range(N_SAMPLE_MEANS)
+                            for _ in range(n_sample_means)
                         ]
                     )
                 elif self.ed.metric_types[target] == "discrete":
@@ -720,17 +819,17 @@ class BayesTest(BaseTest):
                                     1
                                     - np.random.choice(
                                         self.posterior_samples[target]["gate"][k],
-                                        size=(N_SAMPLES_POST_PRED,),
+                                        size=(n_samples_post_pred,),
                                     ),
                                 )
                                 * poisson(
                                     lam=np.random.choice(
                                         self.posterior_samples[target]["rate"][k],
-                                        size=(N_SAMPLES_POST_PRED,),
+                                        size=(n_samples_post_pred,),
                                     ),
                                 )
                             ).mean()
-                            for _ in range(N_SAMPLE_MEANS)
+                            for _ in range(n_sample_means)
                         ]
                     )
                 elif self.ed.metric_types[target] == "continuous":
@@ -742,21 +841,21 @@ class BayesTest(BaseTest):
                                     1
                                     - np.random.choice(
                                         self.posterior_samples[target]["gate"][k],
-                                        size=(N_SAMPLES_POST_PRED,),
+                                        size=(n_samples_post_pred,),
                                     ),
                                 )
                                 * lognormal(
                                     mean=np.random.choice(
                                         self.posterior_samples[target]["loc"][k],
-                                        size=(N_SAMPLES_POST_PRED,),
+                                        size=(n_samples_post_pred,),
                                     ),
                                     sigma=np.random.choice(
                                         self.posterior_samples[target]["scale"][k],
-                                        size=(N_SAMPLES_POST_PRED,),
+                                        size=(n_samples_post_pred,),
                                     ),
                                 )
                             ).mean()
-                            for _ in range(N_SAMPLE_MEANS)
+                            for _ in range(n_sample_means)
                         ]
                     )
 
@@ -768,26 +867,27 @@ class BayesTest(BaseTest):
                 )
 
     def compute_loss(self):
-        # compute one of different loss functions
-        pass
+        """compute one of different loss functions"""
+        raise NotImplementedError
 
     def compute_gain(self):
-        # compute gain function as chosen
-        pass
+        """ompute gain function as chosen"""
+        raise NotImplementedError
 
     def compute_utility(self):
-        # compute utility function with expected gain versus loss
-        pass
+        """compute utility function with expected gain versus loss"""
+        raise NotImplementedError
 
     def plot_prior(self):
-        pass
+        raise NotImplementedError
 
     def plot_dynamic_gain_loss(self):
-        # we need a function that creats daily, weekly etc. batches here
-        pass
+        """we need a function that create daily, weekly etc. batches here"""
+        raise NotImplementedError
 
     def plot_dynamic_bayes_factor(self):
-        pass
+        """dynamic bayes factor plot"""
+        raise NotImplementedError
 
     def get_interpretation(self):
         # 'Under the assumption that all conversion rates are equally likely,
@@ -795,8 +895,17 @@ class BayesTest(BaseTest):
         pass
 
     def _store_posterior_samples(self, target):
-        # method to extract the posterior samples from the mcmc object
-        # where it is hidden a bit
+        """
+        Method to store the posterior samples for a given target.
+        posterior samples from the mcmc object
+        #where it is hidden a bit
+
+        Parameters:
+        - target: The target for which to store the posterior samples.
+
+        Returns:
+        None
+        """
         self.posterior_samples[target] = {}
         for variable in self.variables_per_target[target]:
             self.posterior_samples[target][variable] = {}
@@ -815,6 +924,15 @@ class BayesTest(BaseTest):
                 )
 
     def _store_posterior_means(self, target):
+        """
+        Stores the posterior means for each variant of the target variable.
+
+        Parameters:
+        target (str): The name of the target variable.
+
+        Returns:
+        None
+        """
         self.posterior_means[target] = {}
         for k in range(self.ed.n_variants):
             self.posterior_means[target][k] = list(
@@ -822,6 +940,15 @@ class BayesTest(BaseTest):
             )
 
     def _store_posterior_ate(self, target):
+        """
+        Stores the posterior average treatment effect (ATE) for a given target variable.
+
+        Parameters:
+            target (str): The target variable for which to store the posterior ATE.
+
+        Returns:
+            None
+        """
         self.posterior_ate[target] = {}
 
         for k in range(1, self.ed.n_variants):
@@ -830,8 +957,18 @@ class BayesTest(BaseTest):
             )
 
     def _store_prior_samples(self, target, prior_sampler):
-        # method to extract the prior samples from the mcmc
-        # object where it is hidden a bit
+        """
+        Method to store the prior samples for a given target variable.
+
+        Parameters:
+        - target (str): The target variable for which the prior samples are
+            stored.
+        - prior_sampler (object): The prior sampler object that contains
+            the prior samples.
+
+        Returns:
+        None
+        """
         self.prior_samples[target] = {}
         for variable in self.variables_per_target[target]:
             self.prior_samples[target][variable] = {}
@@ -850,6 +987,16 @@ class BayesTest(BaseTest):
                 )
 
     def _store_prior_means(self, target, prior_sampler):
+        """
+        Stores the prior means for each variant of the target variable.
+
+        Parameters:
+        target (str): The name of the target variable.
+        prior_sampler (PriorSampler): The prior sampler object.
+
+        Returns:
+        None
+        """
         self.prior_means[target] = {}
         for k in range(self.ed.n_variants):
             self.prior_means[target][k] = list(
@@ -857,6 +1004,16 @@ class BayesTest(BaseTest):
             )
 
     def _store_prior_ate(self, target, prior_sampler):
+        """
+        Stores the prior average treatment effect (ATE) for a given target and variant.
+
+        Args:
+            target (str): The target variable.
+            prior_sampler (PriorSampler): The prior sampler object.
+
+        Returns:
+            None
+        """
         self.prior_ate[target] = {}
 
         for k in range(1, self.ed.n_variants):
@@ -864,6 +1021,35 @@ class BayesTest(BaseTest):
 
     @property
     def ate_hdi(self, prob=0.95):
+        """
+        Calculate the highest density interval (HDI) for the average treatment
+            effect (ATE) for each target and variant.
+
+        Parameters:
+            prob (float): The probability mass to be included in the HDI.
+                Default is 0.95.
+
+        Returns:
+            dict: A dictionary containing the HDI for each target and variant.
+                The structure of the dictionary is as follows:
+                {
+                    target1: {
+                        variant1: {
+                            "min": minimum_value,
+                            "max": maximum_value
+                        },
+                        variant2: {
+                            "min": minimum_value,
+                            "max": maximum_value
+                        },
+                        ...
+                    },
+                    target2: {
+                        ...
+                    },
+                    ...
+                }
+        """
         self.hdi = 0.95
         ate_hdi = {}
         for target in self.ed.targets:
@@ -882,6 +1068,16 @@ class BayesTest(BaseTest):
 
     @property
     def means_hdi(self, prob=0.95):
+        """
+        Calculate the highest posterior density interval (HDI)
+            for the means of each target and variant.
+
+        Parameters:
+        prob (float): The probability of the HDI. Default is 0.95.
+
+        Returns:
+        dict: A dictionary containing the HDI for each target and variant.
+        """
         self.hdi = 0.95
         means_hdi = {}
         for target in self.ed.targets:
@@ -899,6 +1095,14 @@ class BayesTest(BaseTest):
         return means_hdi
 
     def _update_hdi(self, target, prob=0.95):
+        """
+        Update the highest density interval (HDI) for the given target variable.
+
+        Parameters:
+            target (str): The target variable for which to update the HDI.
+            prob (float, optional): The probability mass to include in the HDI.
+                Defaults to 0.95.
+        """
         self.hdi = prob
         self.posterior_hdi[target] = {}
         for variable in self.variables_per_target[target]:
@@ -933,6 +1137,15 @@ class BayesTest(BaseTest):
                 )
 
     def set_hdi(self, prob=0.95):
+        """
+        Sets the highest density interval (HDI) for the given probability.
+
+        Parameters:
+            prob (float): The probability for the HDI. Default is 0.95.
+
+        Returns:
+            None
+        """
         self.hdi = prob
         for target in self.ed.targets:
             self._update_hdi(target, prob)
