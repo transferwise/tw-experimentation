@@ -81,7 +81,8 @@ class BayesResult:
         float: The false discovery rate.
 
         Raises:
-        AssertionError: If the treatment is not an integer or is not within the range of 1 to the number of variants.
+        AssertionError: If the treatment is not an integer or is not within the
+        range of 1 to the number of variants.
         """
         assert isinstance(treatment, int) and treatment in range(1, self.n_variants)
 
@@ -98,10 +99,12 @@ class BayesResult:
         Args:
             target (str): The target variable.
             treatment (int): The treatment variable.
-            false_disc_threshold (float, optional): The threshold for the false discovery rate. Defaults to 0.01.
+            false_disc_threshold (float, optional): The threshold for the
+                false discovery rate. Defaults to 0.01.
 
         Returns:
-            str: The decision based on the Bayes factor. Either "accept null" or "reject null".
+            str: The decision based on the Bayes factor. Either "accept null" or
+                "reject null".
         """
         fdr = self.false_discovery_rate(target, treatment)
 
@@ -427,10 +430,10 @@ class BayesResult:
         # TODO: Implement shading of areas with shade_areas and shade_limits
         _ = shade_areas
         _ = shade_limits
-        variant = "Variant"
-        value = "Value"
+        variant_name = "Variant"
+        value_name = "Value"
         data_list = [
-            {variant: variant, value: value}
+            {variant_name: variant, value_name: value}
             for variant, values in sample_per_variant.items()
             for value in values
         ]
@@ -475,24 +478,35 @@ class BayesTest(BaseTest):
         Initializes a BayesianTest object.
 
         Args:
-            ed (ExperimentDataset): The ExperimentDataset object containing the data for the experiment.
+            ed (ExperimentDataset): The ExperimentDataset object containing the data
+                for the experiment.
 
         Attributes:
             sampler (dict): Dictionary to store the sampler object.
-            posterior_samples (dict): Dictionary to store the posterior samples.
-            posterior_samples_difference (dict): Dictionary to store the posterior samples difference.
-            posterior_ate (dict): Dictionary to store the posterior average treatment effect.
+            posterior_samples (dict): Dictionary to store the posterior
+                samples.
+            posterior_samples_difference (dict): Dictionary to store the
+                posterior samples difference.
+            posterior_ate (dict): Dictionary to store the posterior
+                average treatment effect.
             posterior_means (dict): Dictionary to store the posterior means.
-            posterior_hdi (dict): Dictionary to store the posterior highest density interval.
-            posterior_difference_hdi (dict): Dictionary to store the posterior difference highest density interval.
+            posterior_hdi (dict): Dictionary to store the posterior
+                highest density interval.
+            posterior_difference_hdi (dict): Dictionary to store the
+                posterior difference highest density interval.
             prior_samples (dict): Dictionary to store the prior samples.
-            prior_samples_difference (dict): Dictionary to store the prior samples difference.
-            prior_ate (dict): Dictionary to store the prior average treatment effect.
+            prior_samples_difference (dict): Dictionary to store the prior
+                samples difference.
+            prior_ate (dict): Dictionary to store the prior average treatment
+                effect.
             prior_means (dict): Dictionary to store the prior means.
             post_pred (dict): Dictionary to store the posterior predictive samples.
-            post_pred_diff (dict): Dictionary to store the posterior predictive samples difference.
-            post_pred_mean_distribution (dict): Dictionary to store the posterior predictive mean distribution.
-            post_pred_mean_distribution_diff (dict): Dictionary to store the posterior predictive mean distribution difference.
+            post_pred_diff (dict): Dictionary to store the posterior predictive
+                samples difference.
+            post_pred_mean_distribution (dict): Dictionary to store the posterior
+                predictive mean distribution.
+            post_pred_mean_distribution_diff (dict): Dictionary to store the
+                posterior predictive mean distribution difference.
             hdi (float): The highest density interval.
             num_samples (int): The number of samples to be used in the analysis.
 
@@ -530,7 +544,8 @@ class BayesTest(BaseTest):
         params_models: List[dict],
     ):
         """
-        Sets the likelihood model, variables, prior models, and parameters models for a given target.
+        Sets the likelihood model, variables, prior models, and parameters models for a
+            given target.
 
         Args:
             target (str): The target for which the models are being set.
@@ -603,7 +618,8 @@ class BayesTest(BaseTest):
 
         Args:
             target (str): The name of the target variable.
-            fit_model (bool, optional): Whether to perform Bayesian updating. Defaults to True.
+            fit_model (bool, optional): Whether to perform
+                Bayesian updating. Defaults to True.
 
         Returns:
             BayesModel: The initialized BayesModel object.
@@ -700,9 +716,6 @@ class BayesTest(BaseTest):
         Returns:
             None
         """
-        # Rest of the code...
-
-    def compute_bayes_factor(self):
         # https://arxiv.org/abs/1602.05549
         for target in self.ed.targets:
             bm = self._setup_bayesmodel(target, fit_model=False)
@@ -948,8 +961,10 @@ class BayesTest(BaseTest):
         Method to store the prior samples for a given target variable.
 
         Parameters:
-        - target (str): The target variable for which the prior samples are stored.
-        - prior_sampler (object): The prior sampler object that contains the prior samples.
+        - target (str): The target variable for which the prior samples are
+            stored.
+        - prior_sampler (object): The prior sampler object that contains
+            the prior samples.
 
         Returns:
         None
