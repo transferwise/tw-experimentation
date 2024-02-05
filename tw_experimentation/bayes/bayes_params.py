@@ -90,9 +90,10 @@ class ZeroInflatedPoissonLikelihood(ZeroInflatedPoisson):
     @property
     def aux_dist(self):
         if not self.auxiliary_zero_inflation:
-            return None
+            auxdist = None
         else:
-            return Uniform
+            auxdist = Uniform
+        return auxdist
 
 
 DEFAULT_LIKELIHOOD_MODELS = {

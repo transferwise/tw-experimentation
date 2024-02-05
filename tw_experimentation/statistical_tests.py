@@ -263,8 +263,8 @@ class FrequentistPerTargetResults:
     def two_sample_proportion_test_per_variant(
         self, direction="two-sided", pooled_variance: bool = True
     ):
-        p_values = dict()
-        z_stats = dict()
+        p_values = {}
+        z_stats = {}
         for variant in self.variant_means.keys():
             if variant > 0:
                 z_stat, p_value = self.two_sample_proportion_test(
