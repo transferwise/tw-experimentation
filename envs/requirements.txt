@@ -23,7 +23,7 @@ s3fs
 scikit_learn
 scipy
 seaborn
-setuptools==65.5.1
+setuptools==70.0.0
 snowflake_sqlalchemy
 SQLAlchemy
 statsmodels
