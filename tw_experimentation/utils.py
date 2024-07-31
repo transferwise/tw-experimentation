@@ -117,7 +117,7 @@ class ExperimentMetaData:
     """
 
     variant: str
-    targets: List[str]
+    targets: Optional[List[str]]
     n_variants: int
     date: Optional[str] = None
     pre_experiment_cols: Optional[List[str]] = None
@@ -198,14 +198,15 @@ class ExperimentDataset:
     variant: str
     targets: List[str]
     date: str
-    ratio_targets: List[tuple]  # tuples column names for ratio metric calculation
     n_variants: Optional[int]
+    ratio_targets: Optional[dict[str, tuple[str, str]]] = None
+    
 
     def __init__(
         self,
         data: pd.DataFrame,
         variant: str,
-        targets: Union[str, List[str]],
+        targets: Optional[Union[str, List[str]]] = None,
         pre_experiment_cols: Optional[List[str]] = None,
         segments: Optional[List[str]] = None,
         metric_types: Optional[dict[str, str]] = None,
@@ -249,7 +250,10 @@ class ExperimentDataset:
         self.data = data.copy()
         self.metric_types = metric_types
         self.date = date
-        self.ratio_targets = ratio_targets
+        self.ratio_targets = ratio_targets or {}
+        self.targets = (
+            [targets] if isinstance(targets, str) else targets or list(self.ratio_targets.keys())
+        )
         self.n_variants = n_variants
         self.segments = segments or []
         self.control_label = control_label
@@ -262,12 +266,21 @@ class ExperimentDataset:
             assert isinstance(
                 variant, str
             ), "Only a single treatment column supported at the moment"
-            assert is_sequence(targets)
+            assert is_sequence(self.targets)
             self.n_variants = self.data[self.variant].nunique()
 
-        self.targets = [targets] if isinstance(targets, str) else targets
-
+        
+        self._calculate_linearised_metrics()
         self.is_preprocessed = False
+
+    def _calculate_linearised_metrics(self):
+        control_group = self.data[self.data[self.variant] == self.control_label]
+        for ratio_target, (numerator, denominator) in self.ratio_targets.items():
+            kappa = control_group[numerator].sum() / control_group[denominator].sum()
+            self.data[ratio_target] = self.data[numerator] - kappa * self.data[denominator]
+            if ratio_target not in self.targets:
+                self.targets.append(ratio_target)
+    
 
     def preprocess_pre_experiment_dataset(self):
         """
