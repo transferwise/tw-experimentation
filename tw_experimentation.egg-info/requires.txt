@@ -1,6 +1,4 @@
 boto3
-
-#other
 causaltune
 cloudpickle
 dcor
@@ -30,3 +28,10 @@ statsmodels
 streamlit
 sympy
 wise-pizza>=0.2.0
+
+[test]
+autoflake
+black==23.3.0
+flake8==6.1.0
+pytest
+pytest-cov

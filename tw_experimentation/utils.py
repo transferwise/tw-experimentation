@@ -271,7 +271,7 @@ class ExperimentDataset:
 
     def preprocess_pre_experiment_dataset(self):
         """
-        - detec metric types
+        - detect metric types
         """
         assert (
             self.is_only_pre_experiment is True
@@ -337,7 +337,7 @@ class ExperimentDataset:
         available_types = [metric_type.value for metric_type in MetricType]
         assert all(
             metric_type in available_types for metric_type in self.metric_types.values()
-        ), "Metric types must be one of 'binary', 'discrete', or 'continuous'"
+        ), "Metric types must be one of 'binary', 'discrete', 'continuous', or ratio"
 
         self._binary_metric_value_check()
 
