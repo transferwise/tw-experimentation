@@ -166,6 +166,7 @@ def initalise_session_states(additional_params: Optional[Dict] = dict()):
         "segments": [],
         "segments_temp": [],
         "outcomes_temp": [],
+        "ratio_outcomes_temp": {},
         "pre_experiment_temp": [],
         "variant_temp": None,
         "timestamp_temp": None,

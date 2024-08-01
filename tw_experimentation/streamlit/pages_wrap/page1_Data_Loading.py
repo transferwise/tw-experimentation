@@ -247,6 +247,21 @@ def page_1_data_loading(snowflake_connector=SnowflakeIndividualCredentials()):
                 ),
                 key="outcomes_temp",
             )
+
+            if st.checkbox("Add ratio columns"):
+                new_col_name = st.text_input("New column name")
+                numerator = st.selectbox("Select numerator column", cols_for_selection)
+                denominator = st.selectbox("Select denominator column", cols_for_selection)
+
+                if st.button("Add ratio column"):
+                   
+                    ratio_outcomes_temp = st.session_state.get('ratio_outcomes_temp', {})
+                    
+                    ratio_outcomes_temp[new_col_name] = (numerator, denominator)
+                    
+                    st.session_state['ratio_outcomes_temp'] = ratio_outcomes_temp
+
+
             st.markdown(
                 "**Data requirement:** Entries in the outcome columns must be numbers."
             )
@@ -319,7 +334,7 @@ def page_1_data_loading(snowflake_connector=SnowflakeIndividualCredentials()):
                     "bayes_target_plot",
                 ]
             )
-            for s in ["outcomes", "variant", "timestamp", "segments", "pre_experiment"]:
+            for s in ["outcomes", "ratio_outcomes", "variant", "timestamp", "segments", "pre_experiment"]:
                 st.session_state[s] = copy.deepcopy(st.session_state[s + "_temp"])
 
             if not st.session_state["is_experiment"]:
@@ -341,6 +356,7 @@ def page_1_data_loading(snowflake_connector=SnowflakeIndividualCredentials()):
                     data=copy.deepcopy(st.session_state["df_temp"]),
                     variant=st.session_state["variant"],
                     targets=st.session_state["outcomes"],
+                    ratio_targets=st.session_state["ratio_outcomes"],
                     date=(
                         st.session_state["timestamp"]
                         if st.session_state["is_dynamic_experiment"]
@@ -412,7 +428,7 @@ def page_1_data_loading(snowflake_connector=SnowflakeIndividualCredentials()):
         st.dataframe(
             data=st.session_state.ed.data.head(100)
             .style.set_properties(
-                subset=st.session_state["outcomes"],
+                subset=st.session_state["outcomes"]+list(st.session_state["ratio_outcomes"].keys()),
                 **{"background-color": "lightgreen"},
             )
             .set_properties(
