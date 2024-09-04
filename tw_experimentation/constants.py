@@ -46,3 +46,4 @@ class MetricType(Enum):
     BINARY = "binary"
     CONTINUOUS = "continuous"
     DISCRETE = "discrete"
+    RATIO = "ratio"
