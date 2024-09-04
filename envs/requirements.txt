@@ -14,7 +14,7 @@ jupyter
 matplotlib
 mlflow
 networkx
-numpy
+numpy~=1.23.5
 numpyro
 pandas<=1.5.3
 plotly
