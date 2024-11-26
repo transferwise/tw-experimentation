@@ -368,7 +368,7 @@ class BayesResult:
 
         fig = self.fig_posterior_difference_cdf(
             sample_per_variant,
-            posterior_hdi_per_variant,
+            # posterior_hdi_per_variant,
             facet_rows_variant=facet_rows_variant,
         )
         fig.update_layout(

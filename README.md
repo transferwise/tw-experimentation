@@ -153,7 +153,9 @@ Then navigate to the folder `./tw_experimentation/streamlit`.
 
 Now run the command `streamlit run Main.py` and the app should open in your browser.
 
-Then you can use or test dataset from data/test_data.csv
+For testing, you can load the test dataset from `data/test_data.csv`. You should either set the fields as shown in the 
+screenshot below; or just click on the "Load configuration from json" section and load the whole 
+configuration from the file `data/test_config.json`.
 
 ![plot](https://github.com/transferwise/tw-experimentation/blob/main/docs/images/data_loading_streamlit.png?raw=True)
 ![plot](https://github.com/transferwise/tw-experimentation/blob/main/docs/images/evaluation_streamlit.png?raw=True)

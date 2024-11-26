@@ -1,0 +1,1 @@
+{"exp_name": "", "is_experiment": true, "variant_name": "T", "timestamp": "trigger_dates", "is_dynamic_experiment": true, "pre_experiment": ["pre_exp_revenue"], "segments": ["segment_1", "segment_2", "segment_3", "currency", "country_of_origin"], "outcomes": ["num_actions", "revenue", "conversion"], "remove_outliers": true}
